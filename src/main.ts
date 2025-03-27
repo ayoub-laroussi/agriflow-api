@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -12,6 +13,12 @@ async function bootstrap() {
 
   // Activation de la validation globale
   app.useGlobalPipes(new ValidationPipe());
+
+  // Configuration des assets statiques pour Swagger UI
+  app.useStaticAssets({
+    root: join(__dirname, '..', 'node_modules', 'swagger-ui-dist'),
+    prefix: '/swagger-ui/',
+  });
 
   const config = new DocumentBuilder()
     .setTitle('AgriFlow API')
