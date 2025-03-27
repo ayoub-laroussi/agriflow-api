@@ -1,5 +1,4 @@
 import { Controller, Get, Res, Logger } from '@nestjs/common';
-import { Response } from 'express';
 import { join } from 'path';
 import * as fs from 'fs';
 import { FastifyReply } from 'fastify';
