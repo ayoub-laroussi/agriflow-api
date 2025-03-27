@@ -13,16 +13,18 @@ const espace_culture_module_1 = require("./component/espace-culture/espace-cultu
 const planche_module_1 = require("./component/planche/planche.module");
 const culture_module_1 = require("./component/culture/culture.module");
 const action_agricole_module_1 = require("./component/action-agricole/action-agricole.module");
-const planche_controller_1 = require("./component/planche/planche.controller");
-const planche_service_1 = require("./component/planche/planche.service");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [terrain_module_1.TerrainModule, espace_culture_module_1.EspaceCultureModule, planche_module_1.PlancheModule, culture_module_1.CultureModule, action_agricole_module_1.ActionAgricoleModule],
-        controllers: [planche_controller_1.PlancheController],
-        providers: [planche_service_1.PlancheService],
+        imports: [
+            terrain_module_1.TerrainModule,
+            espace_culture_module_1.EspaceCultureModule,
+            planche_module_1.PlancheModule,
+            culture_module_1.CultureModule,
+            action_agricole_module_1.ActionAgricoleModule,
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
