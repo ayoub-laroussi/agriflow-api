@@ -10,12 +10,17 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const terrain_module_1 = require("./src/terrain/terrain.module");
+const espace_culture_module_1 = require("./src/espace-culture/espace-culture.module");
+const planche_module_1 = require("./src/planche/planche.module");
+const culture_module_1 = require("./src/culture/culture.module");
+const action_agricole_module_1 = require("./src/action-agricole/action-agricole.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
+        imports: [terrain_module_1.TerrainModule, espace_culture_module_1.EspaceCultureModule, planche_module_1.PlancheModule, culture_module_1.CultureModule, action_agricole_module_1.ActionAgricoleModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })
