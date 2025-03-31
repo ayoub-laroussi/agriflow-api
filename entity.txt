@@ -4,318 +4,399 @@ skinparam classFontSize 12
 skinparam classAttributeFontSize 11
 skinparam classBorderThickness 1
 
-title Architecture NestJS par Module (avec Actions Agricoles personnalisées)
+title Architecture NestJS - Entités et Modules
 
 ' =====================================
-'         MODULE : Terrains
+'          MODULE : Users
 ' =====================================
-frame "TerrainModule" as F_Terrain {
-  class TerrainModule <<Module>> {
-    - controllers: [TerrainController]
-    - providers: [TerrainService, TerrainRepository]
+frame "UserModule" as F_User {
+  class UserModule <<Module>> {
+    - controllers: [UserController]
+    - providers: [UserService, UserRepository]
   }
 
-  class TerrainController <<Controller>> {
-   createTerrain(dto: CreateTerrainDto)
-   updateTerrain(id: number, dto: UpdateTerrainDto)
-   deleteTerrain(id: number)
-   findAll()
-   findOne(id: number)
+  class UserController <<Controller>> {
+    + createUser(dto: CreateUserDto)
+    + updateUser(id: number, dto: UpdateUserDto)
+    + deleteUser(id: number)
+    + findAll()
+    + findOne(id: number)
   }
 
-  class TerrainService <<Service>> {
-    - terrainRepository: TerrainRepository
-   createTerrain(dto: CreateTerrainDto)
-   updateTerrain(id: number, dto: UpdateTerrainDto)
-   deleteTerrain(id: number)
-   findAll()
-   findOne(id: number)
+  class UserService <<Service>> {
+    - userRepository: UserRepository
+    + createUser(dto: CreateUserDto)
+    + updateUser(id: number, dto: UpdateUserDto)
+    + deleteUser(id: number)
+    + findAll()
+    + findOne(id: number)
   }
 
-  class TerrainRepository <<Repository>> {
-   save(terrain: Terrain)
-   findAll(): Terrain[]
-   findById(id: number): Terrain
-   remove(id: number)
+  class UserRepository <<Repository>> {
+    + save(user: User)
+    + findAll(): User[]
+    + findById(id: number): User
+    + remove(id: number)
   }
 
-  class Terrain <<Entity>> {
-   id: number
-   nom: string
-   surface: number
-   uniteSurface: string
+  class User <<Entity>> {
+    + id: number
+    + email: string
+    + name: string
+    + username: string
+    + password: string
+    + userCreationDate: Date
   }
 
-  class CreateTerrainDto <<DTO>> {
-   nom: string
-   surface: number
-   uniteSurface: string
+  class CreateUserDto <<DTO>> {
+    + email: string
+    + name: string
+    + username: string
+    + password: string
   }
 
-  class UpdateTerrainDto <<DTO>> {
-   nom?: string
-   surface?: number
-   uniteSurface?: string
+  class UpdateUserDto <<DTO>> {
+    + email?: string
+    + name?: string
+    + username?: string
+    + password?: string
   }
 
-  TerrainModule --> TerrainController
-  TerrainModule --> TerrainService
-  TerrainModule --> TerrainRepository
-  TerrainController --> TerrainService
-  TerrainService --> TerrainRepository
-  TerrainRepository --> Terrain
-  TerrainController ..> CreateTerrainDto : use
-  TerrainController ..> UpdateTerrainDto : use
+  UserModule --> UserController
+  UserModule --> UserService
+  UserModule --> UserRepository
+  UserController --> UserService
+  UserService --> UserRepository
+  UserRepository --> User
+  UserController ..> CreateUserDto : use
+  UserController ..> UpdateUserDto : use
 }
 
 ' =====================================
-'   MODULE : Espaces de culture
+'         MODULE : Roles
 ' =====================================
-frame "EspaceCultureModule" as F_Espace {
-  class EspaceCultureModule <<Module>> {
-    - controllers: [EspaceCultureController]
-    - providers: [EspaceCultureService, EspaceCultureRepository]
+frame "RoleModule" as F_Role {
+  class RoleModule <<Module>> {
+    - controllers: [RoleController]
+    - providers: [RoleService, RoleRepository]
   }
 
-  class EspaceCultureController <<Controller>> {
-   createEspaceCulture(dto: CreateEspaceCultureDto)
-   updateEspaceCulture(id: number, dto: UpdateEspaceCultureDto)
-   deleteEspaceCulture(id: number)
-   findAll()
-   findOne(id: number)
+  class RoleController <<Controller>> {
+    + createRole(dto: CreateRoleDto)
+    + findAll()
+    + deleteRole(id: number)
   }
 
-  class EspaceCultureService <<Service>> {
-    - espaceCultureRepository: EspaceCultureRepository
-   createEspaceCulture(dto: CreateEspaceCultureDto)
-   updateEspaceCulture(id: number, dto: UpdateEspaceCultureDto)
-   deleteEspaceCulture(id: number)
-   findAll()
-   findOne(id: number)
+  class RoleService <<Service>> {
+    - roleRepository: RoleRepository
+    + createRole(dto: CreateRoleDto)
+    + findAll()
+    + deleteRole(id: number)
   }
 
-  class EspaceCultureRepository <<Repository>> {
-   save(espace: EspaceCulture)
-   findAll(): EspaceCulture[]
-   findById(id: number): EspaceCulture
-   remove(id: number)
+  class RoleRepository <<Repository>> {
+    + save(role: Role)
+    + findAll(): Role[]
+    + remove(id: number)
   }
 
-  class EspaceCulture <<Entity>> {
-   id: number
-   nom: string
-   type: string
+  class Role <<Entity>> {
+    + id: number
+    + role: string
   }
 
-  class CreateEspaceCultureDto <<DTO>> {
-   nom: string
-   type: string
+  class CreateRoleDto <<DTO>> {
+    + role: string
   }
 
-  class UpdateEspaceCultureDto <<DTO>> {
-   nom?: string
-   type?: string
-  }
-
-  EspaceCultureModule --> EspaceCultureController
-  EspaceCultureModule --> EspaceCultureService
-  EspaceCultureModule --> EspaceCultureRepository
-  EspaceCultureController --> EspaceCultureService
-  EspaceCultureService --> EspaceCultureRepository
-  EspaceCultureRepository --> EspaceCulture
-  EspaceCultureController ..> CreateEspaceCultureDto : use
-  EspaceCultureController ..> UpdateEspaceCultureDto : use
+  RoleModule --> RoleController
+  RoleModule --> RoleService
+  RoleModule --> RoleRepository
+  RoleController --> RoleService
+  RoleService --> RoleRepository
+  RoleRepository --> Role
+  RoleController ..> CreateRoleDto : use
 }
 
 ' =====================================
-'       MODULE : Planches
+'         MODULE : Lands
 ' =====================================
-frame "PlancheModule" as F_Planche {
-  class PlancheModule <<Module>> {
-    - controllers: [PlancheController]
-    - providers: [PlancheService, PlancheRepository]
+frame "LandModule" as F_Land {
+  class LandModule <<Module>> {
+    - controllers: [LandController]
+    - providers: [LandService, LandRepository]
   }
 
-  class PlancheController <<Controller>> {
-   createPlanche(dto: CreatePlancheDto)
-   updatePlanche(id: number, dto: UpdatePlancheDto)
-   deletePlanche(id: number)
-   findAll()
-   findOne(id: number)
+  class LandController <<Controller>> {
+    + createLand(dto: CreateLandDto)
+    + updateLand(id: number, dto: UpdateLandDto)
+    + deleteLand(id: number)
+    + findAll()
+    + findOne(id: number)
   }
 
-  class PlancheService <<Service>> {
-    - plancheRepository: PlancheRepository
-   createPlanche(dto: CreatePlancheDto)
-   updatePlanche(id: number, dto: UpdatePlancheDto)
-   deletePlanche(id: number)
-   findAll()
-   findOne(id: number)
+  class LandService <<Service>> {
+    - landRepository: LandRepository
+    + createLand(dto: CreateLandDto)
+    + updateLand(id: number, dto: UpdateLandDto)
+    + deleteLand(id: number)
+    + findAll()
+    + findOne(id: number)
   }
 
-  class PlancheRepository <<Repository>> {
-   save(planche: Planche)
-   findAll(): Planche[]
-   findById(id: number): Planche
-   remove(id: number)
+  class LandRepository <<Repository>> {
+    + save(land: Land)
+    + findAll(): Land[]
+    + findById(id: number): Land
+    + remove(id: number)
   }
 
-  class Planche <<Entity>> {
-   id: number
-   nom: string
+  class Land <<Entity>> {
+    + id: number
+    + landName: string
+    + landArea: number
+    + landCreationDate: Date
+    + landModificationDate: Date
+    + landCoordinate: string
   }
 
-  class CreatePlancheDto <<DTO>> {
-   nom: string
+  class CreateLandDto <<DTO>> {
+    + landName: string
+    + landArea: number
+    + landCoordinate?: string
   }
 
-  class UpdatePlancheDto <<DTO>> {
-   nom?: string
+  class UpdateLandDto <<DTO>> {
+    + landName?: string
+    + landArea?: number
+    + landCoordinate?: string
   }
 
-  PlancheModule --> PlancheController
-  PlancheModule --> PlancheService
-  PlancheModule --> PlancheRepository
-  PlancheController --> PlancheService
-  PlancheService --> PlancheRepository
-  PlancheRepository --> Planche
-  PlancheController ..> CreatePlancheDto : use
-  PlancheController ..> UpdatePlancheDto : use
+  LandModule --> LandController
+  LandModule --> LandService
+  LandModule --> LandRepository
+  LandController --> LandService
+  LandService --> LandRepository
+  LandRepository --> Land
+  LandController ..> CreateLandDto : use
+  LandController ..> UpdateLandDto : use
 }
 
 ' =====================================
-'        MODULE : Cultures
+'   MODULE : CultivationSpaces
 ' =====================================
-frame "CultureModule" as F_Culture {
-  class CultureModule <<Module>> {
-    - controllers: [CultureController]
-    - providers: [CultureService, CultureRepository]
+frame "CultivationSpaceModule" as F_CS {
+  class CultivationSpaceModule <<Module>> {
+    - controllers: [CultivationSpaceController]
+    - providers: [CultivationSpaceService, CultivationSpaceRepository]
   }
 
-  class CultureController <<Controller>> {
-   createCulture(dto: CreateCultureDto)
-   updateCulture(id: number, dto: UpdateCultureDto)
-   deleteCulture(id: number)
-   findAll()
-   findOne(id: number)
+  class CultivationSpaceController <<Controller>> {
+    + createCultivationSpace(dto: CreateCultivationSpaceDto)
+    + updateCultivationSpace(id: number, dto: UpdateCultivationSpaceDto)
+    + deleteCultivationSpace(id: number)
+    + findAll()
+    + findOne(id: number)
   }
 
-  class CultureService <<Service>> {
-    - cultureRepository: CultureRepository
-   createCulture(dto: CreateCultureDto)
-   updateCulture(id: number, dto: UpdateCultureDto)
-   deleteCulture(id: number)
-   findAll()
-   findOne(id: number)
-   setStatut(id: number, statut: string)
+  class CultivationSpaceService <<Service>> {
+    - cultivationSpaceRepository: CultivationSpaceRepository
+    + createCultivationSpace(dto: CreateCultivationSpaceDto)
+    + updateCultivationSpace(id: number, dto: UpdateCultivationSpaceDto)
+    + deleteCultivationSpace(id: number)
+    + findAll()
+    + findOne(id: number)
   }
 
-  class CultureRepository <<Repository>> {
-   save(culture: Culture)
-   findAll(): Culture[]
-   findById(id: number): Culture
-   remove(id: number)
+  class CultivationSpaceRepository <<Repository>> {
+    + save(cs: CultivationSpace)
+    + findAll(): CultivationSpace[]
+    + findById(id: number): CultivationSpace
+    + remove(id: number)
   }
 
-  class Culture <<Entity>> {
-   id: number
-   nom: string
-   variete: string
-   datePlantation: Date
-   statut: string
+  class CultivationSpace <<Entity>> {
+    + id: number
+    + cultivationSpaceName: string
+    + length: number
+    + width: number
+    + surface: number
+    + ph: number
+    + typeSoil: string
+    + drainage: boolean
   }
 
-  class CreateCultureDto <<DTO>> {
-   nom: string
-   variete: string
-   datePlantation: Date
-   statut?: string
+  class CreateCultivationSpaceDto <<DTO>> {
+    + cultivationSpaceName: string
+    + length?: number
+    + width?: number
+    + surface?: number
+    + ph?: number
+    + typeSoil?: string
+    + drainage?: boolean
   }
 
-  class UpdateCultureDto <<DTO>> {
-   nom?: string
-   variete?: string
-   datePlantation?: Date
-   statut?: string
+  class UpdateCultivationSpaceDto <<DTO>> {
+    + cultivationSpaceName?: string
+    + length?: number
+    + width?: number
+    + surface?: number
+    + ph?: number
+    + typeSoil?: string
+    + drainage?: boolean
   }
 
-  CultureModule --> CultureController
-  CultureModule --> CultureService
-  CultureModule --> CultureRepository
-  CultureController --> CultureService
-  CultureService --> CultureRepository
-  CultureRepository --> Culture
-  CultureController ..> CreateCultureDto : use
-  CultureController ..> UpdateCultureDto : use
+  CultivationSpaceModule --> CultivationSpaceController
+  CultivationSpaceModule --> CultivationSpaceService
+  CultivationSpaceModule --> CultivationSpaceRepository
+  CultivationSpaceController --> CultivationSpaceService
+  CultivationSpaceService --> CultivationSpaceRepository
+  CultivationSpaceRepository --> CultivationSpace
+  CultivationSpaceController ..> CreateCultivationSpaceDto : use
+  CultivationSpaceController ..> UpdateCultivationSpaceDto : use
 }
 
 ' =====================================
-'     MODULE : Actions Agricoles
+'        MODULE : Crop
 ' =====================================
-frame "ActionAgricoleModule" as F_Action {
-  class ActionAgricoleModule <<Module>> {
-    - controllers: [ActionAgricoleController]
-    - providers: [ActionAgricoleService, ActionAgricoleRepository]
+frame "CropModule" as F_Crop {
+  class CropModule <<Module>> {
+    - controllers: [CropController]
+    - providers: [CropService, CropRepository]
   }
 
-  class ActionAgricoleController <<Controller>> {
-   createAction(dto: CreateActionDto)
-   updateAction(id: number, dto: UpdateActionDto)
-   deleteAction(id: number)
-   findAll()
-   findOne(id: number)
+  class CropController <<Controller>> {
+    + createCrop(dto: CreateCropDto)
+    + updateCrop(id: number, dto: UpdateCropDto)
+    + deleteCrop(id: number)
+    + findAll()
+    + findOne(id: number)
   }
 
-  class ActionAgricoleService <<Service>> {
-    - actionAgricoleRepository: ActionAgricoleRepository
-   createAction(dto: CreateActionDto)
-   updateAction(id: number, dto: UpdateActionDto)
-   deleteAction(id: number)
-   findAll()
-   findOne(id: number)
-   setPlantationDetails(actionId: number, spacingRow: number, spacingLine: number, nbPlants: number)
+  class CropService <<Service>> {
+    - cropRepository: CropRepository
+    + createCrop(dto: CreateCropDto)
+    + updateCrop(id: number, dto: UpdateCropDto)
+    + deleteCrop(id: number)
+    + findAll()
+    + findOne(id: number)
   }
 
-  class ActionAgricoleRepository <<Repository>> {
-   save(action: ActionAgricole)
-   findAll(): ActionAgricole[]
-   findById(id: number): ActionAgricole
-   remove(id: number)
+  class CropRepository <<Repository>> {
+    + save(crop: Crop)
+    + findAll(): Crop[]
+    + findById(id: number): Crop
+    + remove(id: number)
   }
 
-  class ActionAgricole <<Entity>> {
-   id: number
-   type: string  ' (préparation, plantation, entretien, protection, récolte)
-   dateAction: Date
-   commentaire: string
+  class Crop <<Entity>> {
+    + id: number
+    + cropCommentary: string
+    + cropPlantFamily: string
+    + cropVariety: string
+    + cropPlantDate: Date
+    + cropStatus: string
   }
 
-  class CreateActionDto <<DTO>> {
-   type: string
-   dateAction: Date
-   commentaire?: string
-   spacingRow?: number
-   spacingLine?: number
-   nbPlants?: number
+  class CreateCropDto <<DTO>> {
+    + cropCommentary?: string
+    + cropPlantFamily: string
+    + cropVariety: string
+    + cropPlantDate: Date
+    + cropStatus?: string
   }
 
-  class UpdateActionDto <<DTO>> {
-   type?: string
-   dateAction?: Date
-   commentaire?: string
-   spacingRow?: number
-   spacingLine?: number
-   nbPlants?: number
+  class UpdateCropDto <<DTO>> {
+    + cropCommentary?: string
+    + cropPlantFamily?: string
+    + cropVariety?: string
+    + cropPlantDate?: Date
+    + cropStatus?: string
   }
 
-  ActionAgricoleModule --> ActionAgricoleController
-  ActionAgricoleModule --> ActionAgricoleService
-  ActionAgricoleModule --> ActionAgricoleRepository
-  ActionAgricoleController --> ActionAgricoleService
-  ActionAgricoleService --> ActionAgricoleRepository
-  ActionAgricoleRepository --> ActionAgricole
-  ActionAgricoleController ..> CreateActionDto : use
-  ActionAgricoleController ..> UpdateActionDto : use
+  CropModule --> CropController
+  CropModule --> CropService
+  CropModule --> CropRepository
+  CropController --> CropService
+  CropService --> CropRepository
+  CropRepository --> Crop
+  CropController ..> CreateCropDto : use
+  CropController ..> UpdateCropDto : use
 }
+
+' =====================================
+'      MODULE : SoilCover
+' =====================================
+frame "SoilCoverModule" as F_SC {
+  class SoilCoverModule <<Module>> {
+    - controllers: [SoilCoverController]
+    - providers: [SoilCoverService, SoilCoverRepository]
+  }
+
+  class SoilCoverController <<Controller>> {
+    + createSoilCover(dto: CreateSoilCoverDto)
+    + updateSoilCover(id: number, dto: UpdateSoilCoverDto)
+    + deleteSoilCover(id: number)
+    + findAll()
+    + findOne(id: number)
+  }
+
+  class SoilCoverService <<Service>> {
+    - soilCoverRepository: SoilCoverRepository
+    + createSoilCover(dto: CreateSoilCoverDto)
+    + updateSoilCover(id: number, dto: UpdateSoilCoverDto)
+    + deleteSoilCover(id: number)
+    + findAll()
+    + findOne(id: number)
+  }
+
+  class SoilCoverRepository <<Repository>> {
+    + save(cover: SoilCover)
+    + findAll(): SoilCover[]
+    + findById(id: number): SoilCover
+    + remove(id: number)
+  }
+
+  class SoilCover <<Entity>> {
+    + id: number
+    + coverDateBegin: Date
+    + coverDateEnd: Date
+    + typeSoilCover: string
+  }
+
+  class CreateSoilCoverDto <<DTO>> {
+    + coverDateBegin: Date
+    + coverDateEnd?: Date
+    + typeSoilCover: string
+  }
+
+  class UpdateSoilCoverDto <<DTO>> {
+    + coverDateBegin?: Date
+    + coverDateEnd?: Date
+    + typeSoilCover?: string
+  }
+
+  SoilCoverModule --> SoilCoverController
+  SoilCoverModule --> SoilCoverService
+  SoilCoverModule --> SoilCoverRepository
+  SoilCoverController --> SoilCoverService
+  SoilCoverService --> SoilCoverRepository
+  SoilCoverRepository --> SoilCover
+  SoilCoverController ..> CreateSoilCoverDto : use
+  SoilCoverController ..> UpdateSoilCoverDto : use
+}
+
+' =====================================
+'        RELATIONS ENTRE ENTITES
+' =====================================
+' Basé sur le MCD (users owns land, land contains cultivation_spaces, etc.)
+
+User "1" -- "0..*" Land : owns
+Land "1" -- "1..*" CultivationSpace : contains
+CultivationSpace "1" -- "0..*" Crop : is cultivated
+Crop "1" -- "0..*" SoilCover : is covered
+
+' Optionnel : un User a un Role ?
+User "1" -- "0..*" Role : has
 
 @enduml
