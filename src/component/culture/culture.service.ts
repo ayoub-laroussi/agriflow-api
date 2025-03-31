@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateCultureDto } from './dto/create-culture.dto';
 import { UpdateCultureDto } from './dto/update-culture.dto';
+import { Culture } from './entities/culture.entity';
 
 @Injectable()
 export class CultureService {
-  create(createCultureDto: CreateCultureDto) {
-    return 'This action adds a new culture';
+  constructor(
+    @InjectRepository(Culture)
+    private cultureRepository: Repository<Culture>,
+  ) {}
+
+  async create(createCultureDto: CreateCultureDto) {
+    const culture = this.cultureRepository.create(createCultureDto);
+    return await this.cultureRepository.save(culture);
   }
 
-  findAll() {
-    return `This action returns all culture`;
+  async findAll() {
+    return await this.cultureRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} culture`;
+  async findOne(id: number) {
+    const culture = await this.cultureRepository.findOne({ where: { id } });
+    if (!culture) {
+      throw new NotFoundException(`Culture avec l'ID ${id} non trouvée`);
+    }
+    return culture;
   }
 
-  update(id: number, updateCultureDto: UpdateCultureDto) {
-    return `This action updates a #${id} culture`;
+  async update(id: number, updateCultureDto: UpdateCultureDto) {
+    const culture = await this.findOne(id);
+    Object.assign(culture, updateCultureDto);
+    return await this.cultureRepository.save(culture);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} culture`;
+  async remove(id: number) {
+    const culture = await this.findOne(id);
+    return await this.cultureRepository.remove(culture);
+  }
+
+  async setStatut(id: number, statut: string) {
+    const culture = await this.findOne(id);
+    culture.statut = statut;
+    return await this.cultureRepository.save(culture);
   }
 }

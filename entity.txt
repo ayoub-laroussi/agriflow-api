@@ -16,46 +16,46 @@ frame "TerrainModule" as F_Terrain {
   }
 
   class TerrainController <<Controller>> {
-    + createTerrain(dto: CreateTerrainDto)
-    + updateTerrain(id: number, dto: UpdateTerrainDto)
-    + deleteTerrain(id: number)
-    + findAll()
-    + findOne(id: number)
+   createTerrain(dto: CreateTerrainDto)
+   updateTerrain(id: number, dto: UpdateTerrainDto)
+   deleteTerrain(id: number)
+   findAll()
+   findOne(id: number)
   }
 
   class TerrainService <<Service>> {
     - terrainRepository: TerrainRepository
-    + createTerrain(dto: CreateTerrainDto)
-    + updateTerrain(id: number, dto: UpdateTerrainDto)
-    + deleteTerrain(id: number)
-    + findAll()
-    + findOne(id: number)
+   createTerrain(dto: CreateTerrainDto)
+   updateTerrain(id: number, dto: UpdateTerrainDto)
+   deleteTerrain(id: number)
+   findAll()
+   findOne(id: number)
   }
 
   class TerrainRepository <<Repository>> {
-    + save(terrain: Terrain)
-    + findAll(): Terrain[]
-    + findById(id: number): Terrain
-    + remove(id: number)
+   save(terrain: Terrain)
+   findAll(): Terrain[]
+   findById(id: number): Terrain
+   remove(id: number)
   }
 
   class Terrain <<Entity>> {
-    + id: number
-    + nom: string
-    + surface: number
-    + uniteSurface: string
+   id: number
+   nom: string
+   surface: number
+   uniteSurface: string
   }
 
   class CreateTerrainDto <<DTO>> {
-    + nom: string
-    + surface: number
-    + uniteSurface: string
+   nom: string
+   surface: number
+   uniteSurface: string
   }
 
   class UpdateTerrainDto <<DTO>> {
-    + nom?: string
-    + surface?: number
-    + uniteSurface?: string
+   nom?: string
+   surface?: number
+   uniteSurface?: string
   }
 
   TerrainModule --> TerrainController
@@ -78,43 +78,43 @@ frame "EspaceCultureModule" as F_Espace {
   }
 
   class EspaceCultureController <<Controller>> {
-    + createEspaceCulture(dto: CreateEspaceCultureDto)
-    + updateEspaceCulture(id: number, dto: UpdateEspaceCultureDto)
-    + deleteEspaceCulture(id: number)
-    + findAll()
-    + findOne(id: number)
+   createEspaceCulture(dto: CreateEspaceCultureDto)
+   updateEspaceCulture(id: number, dto: UpdateEspaceCultureDto)
+   deleteEspaceCulture(id: number)
+   findAll()
+   findOne(id: number)
   }
 
   class EspaceCultureService <<Service>> {
     - espaceCultureRepository: EspaceCultureRepository
-    + createEspaceCulture(dto: CreateEspaceCultureDto)
-    + updateEspaceCulture(id: number, dto: UpdateEspaceCultureDto)
-    + deleteEspaceCulture(id: number)
-    + findAll()
-    + findOne(id: number)
+   createEspaceCulture(dto: CreateEspaceCultureDto)
+   updateEspaceCulture(id: number, dto: UpdateEspaceCultureDto)
+   deleteEspaceCulture(id: number)
+   findAll()
+   findOne(id: number)
   }
 
   class EspaceCultureRepository <<Repository>> {
-    + save(espace: EspaceCulture)
-    + findAll(): EspaceCulture[]
-    + findById(id: number): EspaceCulture
-    + remove(id: number)
+   save(espace: EspaceCulture)
+   findAll(): EspaceCulture[]
+   findById(id: number): EspaceCulture
+   remove(id: number)
   }
 
   class EspaceCulture <<Entity>> {
-    + id: number
-    + nom: string
-    + type: string
+   id: number
+   nom: string
+   type: string
   }
 
   class CreateEspaceCultureDto <<DTO>> {
-    + nom: string
-    + type: string
+   nom: string
+   type: string
   }
 
   class UpdateEspaceCultureDto <<DTO>> {
-    + nom?: string
-    + type?: string
+   nom?: string
+   type?: string
   }
 
   EspaceCultureModule --> EspaceCultureController
@@ -137,40 +137,40 @@ frame "PlancheModule" as F_Planche {
   }
 
   class PlancheController <<Controller>> {
-    + createPlanche(dto: CreatePlancheDto)
-    + updatePlanche(id: number, dto: UpdatePlancheDto)
-    + deletePlanche(id: number)
-    + findAll()
-    + findOne(id: number)
+   createPlanche(dto: CreatePlancheDto)
+   updatePlanche(id: number, dto: UpdatePlancheDto)
+   deletePlanche(id: number)
+   findAll()
+   findOne(id: number)
   }
 
   class PlancheService <<Service>> {
     - plancheRepository: PlancheRepository
-    + createPlanche(dto: CreatePlancheDto)
-    + updatePlanche(id: number, dto: UpdatePlancheDto)
-    + deletePlanche(id: number)
-    + findAll()
-    + findOne(id: number)
+   createPlanche(dto: CreatePlancheDto)
+   updatePlanche(id: number, dto: UpdatePlancheDto)
+   deletePlanche(id: number)
+   findAll()
+   findOne(id: number)
   }
 
   class PlancheRepository <<Repository>> {
-    + save(planche: Planche)
-    + findAll(): Planche[]
-    + findById(id: number): Planche
-    + remove(id: number)
+   save(planche: Planche)
+   findAll(): Planche[]
+   findById(id: number): Planche
+   remove(id: number)
   }
 
   class Planche <<Entity>> {
-    + id: number
-    + nom: string
+   id: number
+   nom: string
   }
 
   class CreatePlancheDto <<DTO>> {
-    + nom: string
+   nom: string
   }
 
   class UpdatePlancheDto <<DTO>> {
-    + nom?: string
+   nom?: string
   }
 
   PlancheModule --> PlancheController
@@ -193,50 +193,50 @@ frame "CultureModule" as F_Culture {
   }
 
   class CultureController <<Controller>> {
-    + createCulture(dto: CreateCultureDto)
-    + updateCulture(id: number, dto: UpdateCultureDto)
-    + deleteCulture(id: number)
-    + findAll()
-    + findOne(id: number)
+   createCulture(dto: CreateCultureDto)
+   updateCulture(id: number, dto: UpdateCultureDto)
+   deleteCulture(id: number)
+   findAll()
+   findOne(id: number)
   }
 
   class CultureService <<Service>> {
     - cultureRepository: CultureRepository
-    + createCulture(dto: CreateCultureDto)
-    + updateCulture(id: number, dto: UpdateCultureDto)
-    + deleteCulture(id: number)
-    + findAll()
-    + findOne(id: number)
-    + setStatut(id: number, statut: string)
+   createCulture(dto: CreateCultureDto)
+   updateCulture(id: number, dto: UpdateCultureDto)
+   deleteCulture(id: number)
+   findAll()
+   findOne(id: number)
+   setStatut(id: number, statut: string)
   }
 
   class CultureRepository <<Repository>> {
-    + save(culture: Culture)
-    + findAll(): Culture[]
-    + findById(id: number): Culture
-    + remove(id: number)
+   save(culture: Culture)
+   findAll(): Culture[]
+   findById(id: number): Culture
+   remove(id: number)
   }
 
   class Culture <<Entity>> {
-    + id: number
-    + nom: string
-    + variete: string
-    + datePlantation: Date
-    + statut: string
+   id: number
+   nom: string
+   variete: string
+   datePlantation: Date
+   statut: string
   }
 
   class CreateCultureDto <<DTO>> {
-    + nom: string
-    + variete: string
-    + datePlantation: Date
-    + statut?: string
+   nom: string
+   variete: string
+   datePlantation: Date
+   statut?: string
   }
 
   class UpdateCultureDto <<DTO>> {
-    + nom?: string
-    + variete?: string
-    + datePlantation?: Date
-    + statut?: string
+   nom?: string
+   variete?: string
+   datePlantation?: Date
+   statut?: string
   }
 
   CultureModule --> CultureController
@@ -259,53 +259,53 @@ frame "ActionAgricoleModule" as F_Action {
   }
 
   class ActionAgricoleController <<Controller>> {
-    + createAction(dto: CreateActionDto)
-    + updateAction(id: number, dto: UpdateActionDto)
-    + deleteAction(id: number)
-    + findAll()
-    + findOne(id: number)
+   createAction(dto: CreateActionDto)
+   updateAction(id: number, dto: UpdateActionDto)
+   deleteAction(id: number)
+   findAll()
+   findOne(id: number)
   }
 
   class ActionAgricoleService <<Service>> {
     - actionAgricoleRepository: ActionAgricoleRepository
-    + createAction(dto: CreateActionDto)
-    + updateAction(id: number, dto: UpdateActionDto)
-    + deleteAction(id: number)
-    + findAll()
-    + findOne(id: number)
-    + setPlantationDetails(actionId: number, spacingRow: number, spacingLine: number, nbPlants: number)
+   createAction(dto: CreateActionDto)
+   updateAction(id: number, dto: UpdateActionDto)
+   deleteAction(id: number)
+   findAll()
+   findOne(id: number)
+   setPlantationDetails(actionId: number, spacingRow: number, spacingLine: number, nbPlants: number)
   }
 
   class ActionAgricoleRepository <<Repository>> {
-    + save(action: ActionAgricole)
-    + findAll(): ActionAgricole[]
-    + findById(id: number): ActionAgricole
-    + remove(id: number)
+   save(action: ActionAgricole)
+   findAll(): ActionAgricole[]
+   findById(id: number): ActionAgricole
+   remove(id: number)
   }
 
   class ActionAgricole <<Entity>> {
-    + id: number
-    + type: string  ' (préparation, plantation, entretien, protection, récolte)
-    + dateAction: Date
-    + commentaire: string
+   id: number
+   type: string  ' (préparation, plantation, entretien, protection, récolte)
+   dateAction: Date
+   commentaire: string
   }
 
   class CreateActionDto <<DTO>> {
-    + type: string
-    + dateAction: Date
-    + commentaire?: string
-    + spacingRow?: number
-    + spacingLine?: number
-    + nbPlants?: number
+   type: string
+   dateAction: Date
+   commentaire?: string
+   spacingRow?: number
+   spacingLine?: number
+   nbPlants?: number
   }
 
   class UpdateActionDto <<DTO>> {
-    + type?: string
-    + dateAction?: Date
-    + commentaire?: string
-    + spacingRow?: number
-    + spacingLine?: number
-    + nbPlants?: number
+   type?: string
+   dateAction?: Date
+   commentaire?: string
+   spacingRow?: number
+   spacingLine?: number
+   nbPlants?: number
   }
 
   ActionAgricoleModule --> ActionAgricoleController
