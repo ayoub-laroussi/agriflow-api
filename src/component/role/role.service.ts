@@ -31,12 +31,12 @@ export class RoleService {
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
-    await this.roleRepository.update(id, updateRoleDto);
+    await this.roleRepository.update({ id_role: id }, updateRoleDto);
     return this.findOne(id);
   }
 
   async remove(id: string): Promise<void> {
-    await this.roleRepository.delete(id);
+    await this.roleRepository.delete({ id_role: id });
   }
 
   findByName(name: string): Promise<Role> {
