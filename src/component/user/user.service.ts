@@ -31,12 +31,12 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.userRepository.update(id_user, updateUserDto);
+    await this.userRepository.update(id, updateUserDto);
     return this.findOne(id);
   }
 
   async remove(id: string): Promise<void> {
-    await this.userRepository.delete(id_user);
+    await this.userRepository.delete(id);
   }
 
   findByEmail(email: string): Promise<User> {
