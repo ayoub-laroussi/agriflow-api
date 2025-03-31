@@ -1,19 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsNotEmpty, IsOptional, MaxLength, Min } from 'class-validator';
 
 export class CreateLandDto {
   @ApiProperty({ description: 'Nom du terrain' })
   @IsString()
   @IsNotEmpty()
-  landName: string;
+  @MaxLength(50)
+  land_name: string;
 
-  @ApiProperty({ description: 'Surface du terrain' })
+  @ApiProperty({ description: 'Surface du terrain en mètres carrés' })
   @IsNumber()
   @IsNotEmpty()
-  landArea: number;
+  @Min(0)
+  land_area: number;
 
   @ApiProperty({ description: 'Coordonnées du terrain', required: false })
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  landCoordinate?: string;
+  land_coordinate?: number;
+
+  @ApiProperty({ description: 'ID de l\'utilisateur propriétaire' })
+  @IsString()
+  @IsNotEmpty()
+  id_user: string;
 }

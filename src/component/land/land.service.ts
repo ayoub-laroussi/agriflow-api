@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateLandDto } from './dto/create-land.dto';
@@ -12,38 +12,37 @@ export class LandService {
     private landRepository: Repository<Land>,
   ) {}
 
-  async create(createLandDto: CreateLandDto) {
-    const land = this.landRepository.create({
-      ...createLandDto,
-      landCreationDate: new Date(),
-      landModificationDate: new Date(),
+  create(createLandDto: CreateLandDto): Promise<Land> {
+    const land = this.landRepository.create(createLandDto);
+    return this.landRepository.save(land);
+  }
+
+  findAll(): Promise<Land[]> {
+    return this.landRepository.find({
+      relations: ['user', 'cultivationSpaces'],
     });
-    return await this.landRepository.save(land);
   }
 
-  async findAll() {
-    return await this.landRepository.find();
-  }
-
-  async findOne(id: number) {
-    const land = await this.landRepository.findOne({ where: { id } });
-    if (!land) {
-      throw new NotFoundException(`Terrain avec l'ID ${id} non trouvé`);
-    }
-    return land;
-  }
-
-  async update(id: number, updateLandDto: UpdateLandDto) {
-    const land = await this.findOne(id);
-    Object.assign(land, {
-      ...updateLandDto,
-      landModificationDate: new Date(),
+  findOne(id: string): Promise<Land> {
+    return this.landRepository.findOne({
+      where: { id_land: id },
+      relations: ['user', 'cultivationSpaces'],
     });
-    return await this.landRepository.save(land);
   }
 
-  async remove(id: number) {
-    const land = await this.findOne(id);
-    return await this.landRepository.remove(land);
+  async update(id: string, updateLandDto: UpdateLandDto): Promise<Land> {
+    await this.landRepository.update(id_land, updateLandDto);
+    return this.findOne(id);
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.landRepository.delete(id_land);
+  }
+
+  findByUserId(userId: string): Promise<Land[]> {
+    return this.landRepository.find({
+      where: { id_user: userId },
+      relations: ['user', 'cultivationSpaces'],
+    });
   }
 }
