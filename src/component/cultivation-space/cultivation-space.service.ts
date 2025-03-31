@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCultivationSpaceDto } from './dto/create-cultivation-space.dto';
@@ -9,12 +9,13 @@ import { CultivationSpace } from './entities/cultivation-space.entity';
 export class CultivationSpaceService {
   constructor(
     @InjectRepository(CultivationSpace)
-    private cultivationSpaceRepository: Repository<CultivationSpace>,
+    private readonly cultivationSpaceRepository: Repository<CultivationSpace>,
   ) {}
 
-  create(createCultivationSpaceDto: CreateCultivationSpaceDto): Promise<CultivationSpace> {
-    const cultivationSpace = this.cultivationSpaceRepository.create(createCultivationSpaceDto);
-    return this.cultivationSpaceRepository.save(cultivationSpace);
+  async create(createCultivationSpaceDto: CreateCultivationSpaceDto): Promise<CultivationSpace> {
+    const cultivationSpace = new CultivationSpace();
+    Object.assign(cultivationSpace, createCultivationSpaceDto);
+    return await this.cultivationSpaceRepository.save(cultivationSpace);
   }
 
   findAll(): Promise<CultivationSpace[]> {
@@ -23,25 +24,30 @@ export class CultivationSpaceService {
     });
   }
 
-  findOne(id: string): Promise<CultivationSpace> {
-    return this.cultivationSpaceRepository.findOne({
-      where: { id_cultivation_space: id },
+  async findOne(id: string): Promise<CultivationSpace> {
+    const cultivationSpace = await this.cultivationSpaceRepository.findOne({
+      where: { id },
       relations: ['land'],
     });
+    if (!cultivationSpace) {
+      throw new NotFoundException(`Espace de culture avec l'ID ${id} non trouvé`);
+    }
+    return cultivationSpace;
   }
 
   async update(id: string, updateCultivationSpaceDto: UpdateCultivationSpaceDto): Promise<CultivationSpace> {
-    await this.cultivationSpaceRepository.update(id_cultivation_space, updateCultivationSpaceDto);
-    return this.findOne(id);
+    const cultivationSpace = await this.findOne(id);
+    Object.assign(cultivationSpace, updateCultivationSpaceDto);
+    return await this.cultivationSpaceRepository.save(cultivationSpace);
   }
 
   async remove(id: string): Promise<void> {
-    await this.cultivationSpaceRepository.delete(id_cultivation_space);
+    await this.cultivationSpaceRepository.delete({ id });
   }
 
   findByLandId(landId: string): Promise<CultivationSpace[]> {
     return this.cultivationSpaceRepository.find({
-      where: { id_land: landId },
+      where: { landId },
       relations: ['land'],
     });
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,9 +12,10 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.userRepository.create(createUserDto);
-    return this.userRepository.save(user);
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const user = new User();
+    Object.assign(user, createUserDto);
+    return await this.userRepository.save(user);
   }
 
   findAll(): Promise<User[]> {
@@ -23,33 +24,46 @@ export class UserService {
     });
   }
 
-  findOne(id: string): Promise<User> {
-    return this.userRepository.findOne({
+  async findOne(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({
       where: { id_user: id },
       relations: ['userRole', 'lands'],
     });
+    if (!user) {
+      throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé`);
+    }
+    return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.userRepository.update({ id_user: id }, updateUserDto);
-    return this.findOne(id);
+    const user = await this.findOne(id);
+    Object.assign(user, updateUserDto);
+    return await this.userRepository.save(user);
   }
 
   async remove(id: string): Promise<void> {
     await this.userRepository.delete({ id_user: id });
   }
 
-  findByEmail(email: string): Promise<User> {
-    return this.userRepository.findOne({
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.findOne({
       where: { email },
       relations: ['userRole', 'lands'],
     });
+    if (!user) {
+      throw new NotFoundException(`Utilisateur avec l'email ${email} non trouvé`);
+    }
+    return user;
   }
 
-  findByUsername(username: string): Promise<User> {
-    return this.userRepository.findOne({
+  async findByUsername(username: string): Promise<User> {
+    const user = await this.userRepository.findOne({
       where: { username },
       relations: ['userRole', 'lands'],
     });
+    if (!user) {
+      throw new NotFoundException(`Utilisateur avec le nom d'utilisateur ${username} non trouvé`);
+    }
+    return user;
   }
 }

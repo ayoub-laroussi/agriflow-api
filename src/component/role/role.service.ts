@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -12,9 +12,10 @@ export class RoleService {
     private roleRepository: Repository<Role>,
   ) {}
 
-  create(createRoleDto: CreateRoleDto): Promise<Role> {
-    const role = this.roleRepository.create(createRoleDto);
-    return this.roleRepository.save(role);
+  async create(createRoleDto: CreateRoleDto): Promise<Role> {
+    const role = new Role();
+    Object.assign(role, createRoleDto);
+    return await this.roleRepository.save(role);
   }
 
   findAll(): Promise<Role[]> {
@@ -23,26 +24,35 @@ export class RoleService {
     });
   }
 
-  findOne(id: string): Promise<Role> {
-    return this.roleRepository.findOne({
-      where: { id_role: id },
+  async findOne(id: number): Promise<Role> {
+    const role = await this.roleRepository.findOne({
+      where: { id },
       relations: ['users'],
     });
+    if (!role) {
+      throw new NotFoundException(`Rôle avec l'ID ${id} non trouvé`);
+    }
+    return role;
   }
 
-  async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
-    await this.roleRepository.update({ id_role: id }, updateRoleDto);
-    return this.findOne(id);
+  async update(id: number, updateRoleDto: UpdateRoleDto): Promise<Role> {
+    const role = await this.findOne(id);
+    Object.assign(role, updateRoleDto);
+    return await this.roleRepository.save(role);
   }
 
-  async remove(id: string): Promise<void> {
-    await this.roleRepository.delete({ id_role: id });
+  async remove(id: number): Promise<void> {
+    await this.roleRepository.delete({ id });
   }
 
-  findByName(name: string): Promise<Role> {
-    return this.roleRepository.findOne({
-      where: { name },
+  async findByName(name: string): Promise<Role> {
+    const role = await this.roleRepository.findOne({
+      where: { role: name },
       relations: ['users'],
     });
+    if (!role) {
+      throw new NotFoundException(`Rôle avec le nom ${name} non trouvé`);
+    }
+    return role;
   }
 }

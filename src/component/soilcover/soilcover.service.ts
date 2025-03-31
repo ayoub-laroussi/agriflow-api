@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateSoilCoverDto } from './dto/create-soilcover.dto';
@@ -12,25 +12,31 @@ export class SoilCoverService {
     private soilCoverRepository: Repository<SoilCover>,
   ) {}
 
-  create(createSoilCoverDto: CreateSoilCoverDto): Promise<SoilCover> {
-    const soilCover = this.soilCoverRepository.create(createSoilCoverDto);
-    return this.soilCoverRepository.save(soilCover);
+  async create(createSoilCoverDto: CreateSoilCoverDto): Promise<SoilCover> {
+    const soilCover = new SoilCover();
+    Object.assign(soilCover, createSoilCoverDto);
+    return await this.soilCoverRepository.save(soilCover);
   }
 
   findAll(): Promise<SoilCover[]> {
     return this.soilCoverRepository.find();
   }
 
-  findOne(id: string): Promise<SoilCover> {
-    return this.soilCoverRepository.findOneBy({ id_soil_cover: id });
+  async findOne(id: string): Promise<SoilCover> {
+    const soilCover = await this.soilCoverRepository.findOneBy({ id_soil_cover: id });
+    if (!soilCover) {
+      throw new NotFoundException(`Couverture de sol avec l'ID ${id} non trouvé`);
+    }
+    return soilCover;
   }
 
   async update(id: string, updateSoilCoverDto: UpdateSoilCoverDto): Promise<SoilCover> {
-    await this.soilCoverRepository.update(id_soil_cover, updateSoilCoverDto);
-    return this.findOne(id);
+    const soilCover = await this.findOne(id);
+    Object.assign(soilCover, updateSoilCoverDto);
+    return await this.soilCoverRepository.save(soilCover);
   }
 
   async remove(id: string): Promise<void> {
-    await this.soilCoverRepository.delete(id_soil_cover);
+    await this.soilCoverRepository.delete({ id_soil_cover: id });
   }
 }

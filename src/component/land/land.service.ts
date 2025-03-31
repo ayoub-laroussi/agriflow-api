@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateLandDto } from './dto/create-land.dto';
@@ -12,9 +12,9 @@ export class LandService {
     private landRepository: Repository<Land>,
   ) {}
 
-  create(createLandDto: CreateLandDto): Promise<Land> {
+  async create(createLandDto: CreateLandDto): Promise<Land> {
     const land = this.landRepository.create(createLandDto);
-    return this.landRepository.save(land);
+    return await this.landRepository.save(land);
   }
 
   findAll(): Promise<Land[]> {
@@ -23,20 +23,25 @@ export class LandService {
     });
   }
 
-  findOne(id: string): Promise<Land> {
-    return this.landRepository.findOne({
+  async findOne(id: string): Promise<Land> {
+    const land = await this.landRepository.findOne({
       where: { id_land: id },
       relations: ['user', 'cultivationSpaces'],
     });
+    if (!land) {
+      throw new NotFoundException(`Terrain avec l'ID ${id} non trouvé`);
+    }
+    return land;
   }
 
   async update(id: string, updateLandDto: UpdateLandDto): Promise<Land> {
-    await this.landRepository.update(id_land, updateLandDto);
-    return this.findOne(id);
+    const land = await this.findOne(id);
+    Object.assign(land, updateLandDto);
+    return await this.landRepository.save(land);
   }
 
   async remove(id: string): Promise<void> {
-    await this.landRepository.delete(id_land);
+    await this.landRepository.delete({ id_land: id });
   }
 
   findByUserId(userId: string): Promise<Land[]> {

@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TerrainModule } from './component/terrain/terrain.module';
+import { SoilcoverModule } from './component/soilcover/soilcover.module';
+import { CropModule } from './component/crop/crop.module';
+import { CultivationSpaceModule } from './component/cultivation-space/cultivation-space.module';
 import { LandModule } from './component/land/land.module';
 import { ActionAgricoleModule } from './component/action-agricole/action-agricole.module';
 import { CultureModule } from './component/culture/culture.module';
@@ -35,6 +38,9 @@ import { TerrainModule } from './component/terrain/terrain.module';
     UserModule,
     RoleModule,
     LandModule,
+    CultivationSpaceModule,
+    CropModule,
+    SoilcoverModule,
   ],
 })
 export class AppModule {}
