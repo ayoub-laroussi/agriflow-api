@@ -8,22 +8,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
-const terrain_module_1 = require("./component/terrain/terrain.module");
-const espace_culture_module_1 = require("./component/espace-culture/espace-culture.module");
-const planche_module_1 = require("./component/planche/planche.module");
-const culture_module_1 = require("./component/culture/culture.module");
-const action_agricole_module_1 = require("./component/action-agricole/action-agricole.module");
+const typeorm_1 = require("@nestjs/typeorm");
+const config_1 = require("@nestjs/config");
+const user_module_1 = require("./component/user/user.module");
+const role_module_1 = require("./component/role/role.module");
+const land_module_1 = require("./component/land/land.module");
+const soilcover_module_1 = require("./component/soilcover/soilcover.module");
+const cultivation_space_module_1 = require("./component/cultivation-space/cultivation-space.module");
+const crop_module_1 = require("./component/crop/crop.module");
+const typeorm_config_1 = require("./config/typeorm.config");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            terrain_module_1.TerrainModule,
-            espace_culture_module_1.EspaceCultureModule,
-            planche_module_1.PlancheModule,
-            culture_module_1.CultureModule,
-            action_agricole_module_1.ActionAgricoleModule,
+            config_1.ConfigModule.forRoot(),
+            typeorm_1.TypeOrmModule.forRoot(typeorm_config_1.typeOrmConfig),
+            user_module_1.UserModule,
+            role_module_1.RoleModule,
+            land_module_1.LandModule,
+            soilcover_module_1.SoilCoverModule,
+            cultivation_space_module_1.CultivationSpaceModule,
+            crop_module_1.CropModule,
         ],
     })
 ], AppModule);

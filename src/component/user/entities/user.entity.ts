@@ -24,11 +24,7 @@ export class User {
   @ManyToOne(() => Role)
   @JoinColumn({ name: 'role' })
   @ApiProperty({ description: 'Rôle de l\'utilisateur' })
-  userRole: Role;
-
-  @Column()
-  @ApiProperty({ description: 'Nom du rôle' })
-  role: string;
+  role: Role;
 
   @OneToMany(() => Land, land => land.user)
   @ApiProperty({ description: 'Terrains de l\'utilisateur' })

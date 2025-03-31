@@ -56,3 +56,6 @@ export class UserController {
   @ApiOperation({ summary: 'Récupérer un utilisateur par son nom d\'utilisateur' })
   @ApiResponse({ status: 200, description: 'Utilisateur trouvé', type: User })
   findByUsername(@Param('username') username: string): Promise<User> {
+    return this.userService.findByUsername(username);
+  }
+}

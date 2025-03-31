@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCropDto } from './dto/create-crop.dto';
@@ -12,25 +12,33 @@ export class CropService {
     private cropRepository: Repository<Crop>,
   ) {}
 
-  create(createCropDto: CreateCropDto): Promise<Crop> {
-    const crop = this.cropRepository.create(createCropDto);
-    return this.cropRepository.save(crop);
+  async create(createCropDto: CreateCropDto): Promise<Crop> {
+    const crop = new Crop();
+    Object.assign(crop, createCropDto);
+    return await this.cropRepository.save(crop);
   }
 
   findAll(): Promise<Crop[]> {
     return this.cropRepository.find();
   }
 
-  findOne(id: string): Promise<Crop> {
-    return this.cropRepository.findOneBy({ id_crop: id });
+  async findOne(id: string): Promise<Crop> {
+    const crop = await this.cropRepository.findOne({
+      where: { id },
+    });
+    if (!crop) {
+      throw new NotFoundException(`Culture avec l'ID ${id} non trouvé`);
+    }
+    return crop;
   }
 
   async update(id: string, updateCropDto: UpdateCropDto): Promise<Crop> {
-    await this.cropRepository.update(id_crop, updateCropDto);
-    return this.findOne(id);
+    const crop = await this.findOne(id);
+    Object.assign(crop, updateCropDto);
+    return await this.cropRepository.save(crop);
   }
 
   async remove(id: string): Promise<void> {
-    await this.cropRepository.delete(id_crop);
+    await this.cropRepository.delete({ id });
   }
 }
