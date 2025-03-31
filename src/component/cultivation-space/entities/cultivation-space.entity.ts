@@ -1,71 +1,55 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Land } from '../../land/entities/land.entity';
+import { Crop } from '../../crop/entities/crop.entity';
 
 @Entity('cultivation_spaces')
 export class CultivationSpace {
   @PrimaryGeneratedColumn('uuid')
   @ApiProperty({ description: 'Identifiant unique de l\'espace de culture' })
-  id_cultivation_space: string;
+  id: string;
 
-  @Column({ length: 50 })
+  @Column({ name: 'name', length: 100 })
   @ApiProperty({ description: 'Nom de l\'espace de culture' })
-  cultivation_space_name: string;
+  name: string;
 
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'Type d\'espace de culture', required: false })
-  cultivation_space_type?: string;
+  @Column({ name: 'description', type: 'text', nullable: true })
+  @ApiProperty({ description: 'Description de l\'espace de culture' })
+  description: string;
 
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'Statut de l\'espace de culture', required: false })
-  cultivation_spaces_status?: string;
-
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'Surface de l\'espace de culture', required: false })
-  cultivation_spaces_area?: number;
-
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'Longueur de l\'espace de culture', required: false })
-  cultivation_spaces_length?: number;
-
-  @Column({ length: 50, nullable: true })
-  @ApiProperty({ description: 'Type de sol', required: false })
-  cultivation_spaces_soil_type?: string;
-
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'Largeur de l\'espace de culture', required: false })
-  cultivation_spaces_width?: number;
-
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'pH du sol', required: false })
-  cultivation_spaces_ph?: number;
-
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'Commentaire sur l\'espace de culture', required: false })
-  cultivation_spaces_commentary?: string;
-
-  @Column({ length: 50, nullable: true })
-  @ApiProperty({ description: 'Fertilité du sol', required: false })
-  cultivation_spaces_soil_fertility?: string;
-
-  @Column({ length: 50, nullable: true })
-  @ApiProperty({ description: 'Drainage du sol', required: false })
-  cultivation_spaces_soil_drainage?: string;
+  @Column({ name: 'area', type: 'decimal', precision: 10, scale: 2 })
+  @ApiProperty({ description: 'Surface de l\'espace de culture en mètres carrés' })
+  area: number;
 
   @ManyToOne(() => Land)
-  @JoinColumn({ name: 'id_land' })
+  @JoinColumn({ name: 'land_id' })
   @ApiProperty({ description: 'Terrain associé' })
   land: Land;
 
-  @Column()
+  @Column({ name: 'land_id' })
   @ApiProperty({ description: 'ID du terrain' })
-  id_land: string;
+  landId: string;
 
-  @CreateDateColumn()
+  @ManyToMany(() => Crop, crop => crop.cultivationSpaces)
+  @JoinTable({
+    name: 'is_cultivated',
+    joinColumn: {
+      name: 'cultivation_space_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'crop_id',
+      referencedColumnName: 'id',
+    },
+  })
+  @ApiProperty({ description: 'Cultures associées' })
+  crops: Crop[];
+
+  @CreateDateColumn({ name: 'created_at' })
   @ApiProperty({ description: 'Date de création de l\'espace de culture' })
-  cultivation_space_creation_date: Date;
+  createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   @ApiProperty({ description: 'Date de modification de l\'espace de culture' })
-  cultivation_space_modification_date: Date;
+  updatedAt: Date;
 }

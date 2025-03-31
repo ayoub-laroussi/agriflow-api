@@ -1,45 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { CultivationSpace } from '../../cultivation-space/entities/cultivation-space.entity';
 
-@Entity('crop')
+@Entity('crops')
 export class Crop {
-  @PrimaryGeneratedColumn('uuid')
   @ApiProperty({ description: 'Identifiant unique de la culture' })
-  id_crop: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'Commentaire sur la culture', required: false })
-  crop_commentary?: string;
+  @ApiProperty({ description: 'Commentaire sur la culture' })
+  @Column({ name: 'commentary', type: 'text', nullable: true })
+  commentary: string;
 
-  @Column({ length: 50 })
-  @ApiProperty({ description: 'Nom de la culture' })
-  crop_name: string;
+  @ApiProperty({ description: 'Famille de la plante' })
+  @Column({ name: 'plant_family', length: 100 })
+  plantFamily: string;
 
-  @Column({ length: 50, nullable: true })
-  @ApiProperty({ description: 'Famille de la plante', required: false })
-  crop_plant_family?: string;
+  @ApiProperty({ description: 'Variété de la plante' })
+  @Column({ name: 'variety', length: 100 })
+  variety: string;
 
-  @Column({ length: 50, nullable: true })
-  @ApiProperty({ description: 'Variété de la culture', required: false })
-  crop_variety?: string;
-
-  @Column()
   @ApiProperty({ description: 'Date de plantation' })
-  crop_planting_date: Date;
+  @Column({ name: 'plant_date', type: 'date' })
+  plantDate: Date;
 
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'Date de récolte', required: false })
-  crop_harvest_date?: Date;
+  @ApiProperty({ description: 'Statut de la culture' })
+  @Column({ name: 'status', length: 20 })
+  status: string;
 
-  @Column({ nullable: true })
-  @ApiProperty({ description: 'Statut de la culture', required: false })
-  crop_status?: string;
+  @ApiProperty({ description: 'Espaces de culture associés' })
+  @ManyToMany(() => CultivationSpace, cultivationSpace => cultivationSpace.crops)
+  cultivationSpaces: CultivationSpace[];
 
-  @CreateDateColumn()
-  @ApiProperty({ description: 'Date de création de la culture' })
-  crop_creation_date: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
-  @UpdateDateColumn()
-  @ApiProperty({ description: 'Date de modification de la culture' })
-  crop_modification_date: Date;
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 }
