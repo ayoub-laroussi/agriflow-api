@@ -13,11 +13,11 @@ export class Crop {
   commentary: string;
 
   @ApiProperty({ description: 'Famille de la plante' })
-  @Column({ name: 'plant_family', length: 100 })
+  @Column({ name: 'plant_family', length: 100, type: 'varchar' })
   plantFamily: string;
 
   @ApiProperty({ description: 'Variété de la plante' })
-  @Column({ name: 'variety', length: 100 })
+  @Column({ name: 'variety', length: 100, type: 'varchar' })
   variety: string;
 
   @ApiProperty({ description: 'Date de plantation' })
@@ -25,16 +25,16 @@ export class Crop {
   plantDate: Date;
 
   @ApiProperty({ description: 'Statut de la culture' })
-  @Column({ name: 'status', length: 20 })
+  @Column({ name: 'status', length: 20, type: 'varchar' })
   status: string;
 
   @ApiProperty({ description: 'Espaces de culture associés' })
   @ManyToMany(() => CultivationSpace, cultivationSpace => cultivationSpace.crops)
   cultivationSpaces: CultivationSpace[];
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
 }

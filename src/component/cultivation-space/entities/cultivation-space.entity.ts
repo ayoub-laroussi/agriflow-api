@@ -9,7 +9,7 @@ export class CultivationSpace {
   @ApiProperty({ description: 'Identifiant unique de l\'espace de culture' })
   id: string;
 
-  @Column({ name: 'name', length: 100 })
+  @Column({ name: 'name', length: 100, type: 'varchar' })
   @ApiProperty({ description: 'Nom de l\'espace de culture' })
   name: string;
 
@@ -26,7 +26,7 @@ export class CultivationSpace {
   @ApiProperty({ description: 'Terrain associé' })
   land: Land;
 
-  @Column({ name: 'land_id' })
+  @Column({ name: 'land_id', type: 'uuid' })
   @ApiProperty({ description: 'ID du terrain' })
   landId: string;
 
@@ -45,11 +45,11 @@ export class CultivationSpace {
   @ApiProperty({ description: 'Cultures associées' })
   crops: Crop[];
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   @ApiProperty({ description: 'Date de création de l\'espace de culture' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   @ApiProperty({ description: 'Date de modification de l\'espace de culture' })
   updatedAt: Date;
 }

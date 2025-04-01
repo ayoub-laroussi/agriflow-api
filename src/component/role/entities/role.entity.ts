@@ -8,7 +8,7 @@ export class Role {
   @ApiProperty({ description: 'Identifiant unique du rôle' })
   id: number;
 
-  @Column({ length: 50, unique: true })
+  @Column({ length: 50, unique: true, type: 'varchar' })
   @ApiProperty({ description: 'Nom du rôle' })
   role: string;
 

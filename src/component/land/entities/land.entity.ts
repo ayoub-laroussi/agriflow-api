@@ -9,15 +9,15 @@ export class Land {
   @ApiProperty({ description: 'Identifiant unique du terrain' })
   id_land: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50, type: 'varchar' })
   @ApiProperty({ description: 'Nom du terrain' })
   land_name: string;
 
-  @Column()
+  @Column({ type: 'float' })
   @ApiProperty({ description: 'Surface du terrain en mètres carrés' })
   land_area: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'float' })
   @ApiProperty({ description: 'Coordonnées du terrain', required: false })
   land_coordinate?: number;
 
@@ -26,7 +26,7 @@ export class Land {
   @ApiProperty({ description: 'Utilisateur propriétaire du terrain' })
   user: User;
 
-  @Column()
+  @Column({ type: 'uuid' })
   @ApiProperty({ description: 'ID de l\'utilisateur propriétaire' })
   id_user: string;
 
@@ -34,11 +34,11 @@ export class Land {
   @ApiProperty({ description: 'Espaces de culture du terrain' })
   cultivationSpaces: CultivationSpace[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   @ApiProperty({ description: 'Date de création du terrain' })
   land_creation_date: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp' })
   @ApiProperty({ description: 'Date de modification du terrain' })
   land_modification_date: Date;
 }

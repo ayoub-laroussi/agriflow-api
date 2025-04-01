@@ -23,7 +23,7 @@ export class SoilCoverService {
   }
 
   async findOne(id: string): Promise<SoilCover> {
-    const soilCover = await this.soilCoverRepository.findOneBy({ id_soil_cover: id });
+    const soilCover = await this.soilCoverRepository.findOne({ where: { id_soil_cover: id } });
     if (!soilCover) {
       throw new NotFoundException(`Couverture de sol avec l'ID ${id} non trouvé`);
     }
@@ -37,6 +37,7 @@ export class SoilCoverService {
   }
 
   async remove(id: string): Promise<void> {
+    const soilCover = await this.findOne(id);
     await this.soilCoverRepository.delete({ id_soil_cover: id });
   }
 }

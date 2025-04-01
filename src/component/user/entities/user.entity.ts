@@ -9,15 +9,15 @@ export class User {
   @ApiProperty({ description: 'Identifiant unique de l\'utilisateur' })
   id_user: string;
 
-  @Column({ length: 50, unique: true })
+  @Column({ length: 50, unique: true, type: 'varchar' })
   @ApiProperty({ description: 'Email de l\'utilisateur' })
   email: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50, type: 'varchar' })
   @ApiProperty({ description: 'Nom d\'utilisateur' })
   username: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   @ApiProperty({ description: 'Mot de passe de l\'utilisateur' })
   password: string;
 
@@ -30,7 +30,7 @@ export class User {
   @ApiProperty({ description: 'Terrains de l\'utilisateur' })
   lands: Land[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   @ApiProperty({ description: 'Date de création de l\'utilisateur' })
   users_creation_date: Date;
 }
