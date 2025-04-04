@@ -25,11 +25,6 @@ async function bootstrap() {
     .setTitle('AgriFlow API')
     .setDescription('API de gestion des exploitations agricoles')
     .setVersion('1.0')
-    .addTag('terrain', 'Gestion des terrains')
-    .addTag('espace-culture', 'Gestion des espaces de culture')
-    .addTag('planche', 'Gestion des planches')
-    .addTag('culture', 'Gestion des cultures')
-    .addTag('action-agricole', 'Gestion des actions agricoles')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
