@@ -5,7 +5,6 @@ import { CropService } from './crop.service';
 
 describe('CropController', () => {
   let controller: CropController;
-  let service: CropService;
 
   const mockCropService = {
     create: vi.fn(),
@@ -16,7 +15,8 @@ describe('CropController', () => {
   };
 
   const mockCrop = {
-    id_crop: '123',
+    id: '123',
+    crop_name: 'Tomate', 
     crop_commentary: 'Commentaire de test',
     crop_plant_family: 'Famille Test',
     crop_variety: 'Variété Test',
@@ -36,12 +36,21 @@ describe('CropController', () => {
     }).compile();
 
     controller = module.get<CropController>(CropController);
-    service = module.get<CropService>(CropService);
+    
+    // Ajouter manuellement le service au contrôleur
+    Object.defineProperty(controller, 'cropService', {
+      value: mockCropService,
+      writable: true,
+    });
+    
+    // Réinitialiser les mocks
+    vi.clearAllMocks();
   });
 
   describe('create', () => {
     it('devrait créer une nouvelle culture', async () => {
       const createCropDto = {
+        crop_name: 'Tomate',
         crop_commentary: 'Commentaire de test',
         crop_plant_family: 'Famille Test',
         crop_variety: 'Variété Test',
