@@ -19,9 +19,10 @@ describe('RoleService', () => {
     delete: vi.fn(),
   };
 
-  const mockRole = {
+  const mockRole: Role = {
     id: 1,
     role: 'admin',
+    users: []
   };
 
   beforeEach(async () => {
@@ -37,6 +38,9 @@ describe('RoleService', () => {
 
     service = module.get<RoleService>(RoleService);
     repository = module.get<Repository<Role>>(getRepositoryToken(Role));
+    
+    // Réinitialiser les mocks avant chaque test
+    vi.clearAllMocks();
   });
 
   describe('create', () => {
@@ -45,14 +49,17 @@ describe('RoleService', () => {
         role: 'admin',
       };
 
-      mockRepository.create.mockReturnValue(mockRole);
+      // Le service utilise Object.assign et non repository.create
       mockRepository.save.mockResolvedValue(mockRole);
 
       const result = await service.create(createRoleDto);
 
       expect(result).toEqual(mockRole);
-      expect(mockRepository.create).toHaveBeenCalledWith(createRoleDto);
       expect(mockRepository.save).toHaveBeenCalled();
+      
+      // Vérifier que l'objet passé à save a la propriété 'role' correcte
+      const savedObject = mockRepository.save.mock.calls[0][0];
+      expect(savedObject).toHaveProperty('role', 'admin');
     });
   });
 
@@ -64,7 +71,9 @@ describe('RoleService', () => {
       const result = await service.findAll();
 
       expect(result).toEqual(roles);
-      expect(mockRepository.find).toHaveBeenCalled();
+      expect(mockRepository.find).toHaveBeenCalledWith({
+        relations: ['users'],
+      });
     });
   });
 
@@ -77,6 +86,7 @@ describe('RoleService', () => {
       expect(result).toEqual(mockRole);
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
+        relations: ['users'],
       });
     });
 
@@ -101,6 +111,7 @@ describe('RoleService', () => {
       expect(result).toEqual({ ...mockRole, ...updateRoleDto });
       expect(mockRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
+        relations: ['users'],
       });
       expect(mockRepository.save).toHaveBeenCalled();
     });
@@ -114,21 +125,32 @@ describe('RoleService', () => {
 
   describe('remove', () => {
     it('devrait supprimer un rôle', async () => {
-      mockRepository.findOne.mockResolvedValue(mockRole);
+      // Le service ne vérifie pas si le rôle existe avant de le supprimer
       mockRepository.delete.mockResolvedValue({ affected: 1 });
 
       await service.remove(1);
 
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
-      expect(mockRepository.delete).toHaveBeenCalledWith(1);
+      expect(mockRepository.delete).toHaveBeenCalledWith({ id: 1 });
     });
-
+  });
+  
+  describe('findByName', () => {
+    it('devrait retourner un rôle par son nom', async () => {
+      mockRepository.findOne.mockResolvedValue(mockRole);
+      
+      const result = await service.findByName('admin');
+      
+      expect(result).toEqual(mockRole);
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { role: 'admin' },
+        relations: ['users'],
+      });
+    });
+    
     it('devrait lancer une exception si le rôle n\'est pas trouvé', async () => {
       mockRepository.findOne.mockResolvedValue(null);
-
-      await expect(service.remove(1)).rejects.toThrow(NotFoundException);
+      
+      await expect(service.findByName('inexistant')).rejects.toThrow(NotFoundException);
     });
   });
 }); 

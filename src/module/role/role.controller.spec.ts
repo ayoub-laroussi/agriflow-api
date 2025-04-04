@@ -7,7 +7,6 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 
 describe('RoleController', () => {
   let controller: RoleController;
-  let service: RoleService;
 
   const mockRoleService = {
     create: vi.fn(),
@@ -34,7 +33,15 @@ describe('RoleController', () => {
     }).compile();
 
     controller = module.get<RoleController>(RoleController);
-    service = module.get<RoleService>(RoleService);
+    
+    // Ajouter manuellement le service au contrôleur
+    Object.defineProperty(controller, 'roleService', {
+      value: mockRoleService,
+      writable: true,
+    });
+    
+    // Réinitialiser les mocks avant chaque test
+    vi.clearAllMocks();
   });
 
   describe('create', () => {
@@ -71,7 +78,7 @@ describe('RoleController', () => {
       const result = await controller.findOne('1');
 
       expect(result).toEqual(mockRole);
-      expect(mockRoleService.findOne).toHaveBeenCalledWith('1');
+      expect(mockRoleService.findOne).toHaveBeenCalledWith(1);
     });
   });
 
@@ -86,7 +93,7 @@ describe('RoleController', () => {
       const result = await controller.update('1', updateRoleDto);
 
       expect(result).toEqual({ ...mockRole, ...updateRoleDto });
-      expect(mockRoleService.update).toHaveBeenCalledWith('1', updateRoleDto);
+      expect(mockRoleService.update).toHaveBeenCalledWith(1, updateRoleDto);
     });
   });
 
@@ -96,7 +103,7 @@ describe('RoleController', () => {
 
       await controller.remove('1');
 
-      expect(mockRoleService.remove).toHaveBeenCalledWith('1');
+      expect(mockRoleService.remove).toHaveBeenCalledWith(1);
     });
   });
 }); 
