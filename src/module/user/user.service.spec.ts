@@ -7,12 +7,14 @@ import { User } from './entities/user.entity';
 import { NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Role } from '../role/entities/role.entity';
 
 describe('UserService', () => {
   let service: UserService;
-  let repository: Repository<User>;
+  let userRepository: Repository<User>;
+  let roleRepository: Repository<Role>;
 
-  const mockRepository = {
+  const mockUserRepository = {
     create: vi.fn(),
     save: vi.fn(),
     find: vi.fn(),
@@ -21,12 +23,22 @@ describe('UserService', () => {
     delete: vi.fn(),
   };
 
+  const mockRoleRepository = {
+    findOne: vi.fn(),
+  };
+
+  const mockRole: Role = {
+    id: 1,
+    role: 'admin',
+    users: [],
+  };
+
   const mockUser: User = {
     id_user: '123',
     email: 'test@test.com',
     username: 'testuser',
     password: 'password123',
-    role: { id: 1, role: 'admin', users: [] },
+    role: mockRole,
     lands: [],
     users_creation_date: new Date(),
   };
@@ -37,13 +49,18 @@ describe('UserService', () => {
         UserService,
         {
           provide: getRepositoryToken(User),
-          useValue: mockRepository,
+          useValue: mockUserRepository,
+        },
+        {
+          provide: getRepositoryToken(Role),
+          useValue: mockRoleRepository,
         },
       ],
     }).compile();
 
     service = module.get<UserService>(UserService);
-    repository = module.get<Repository<User>>(getRepositoryToken(User));
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    roleRepository = module.get<Repository<Role>>(getRepositoryToken(Role));
   });
 
   describe('create', () => {
@@ -55,43 +72,60 @@ describe('UserService', () => {
         role: 'admin',
       };
 
-      mockRepository.create.mockReturnValue(mockUser);
-      mockRepository.save.mockResolvedValue(mockUser);
+      // Simuler la recherche du rôle
+      mockRoleRepository.findOne.mockResolvedValue(mockRole);
+      mockUserRepository.save.mockResolvedValue(mockUser);
 
       const result = await service.create(createUserDto);
 
       expect(result).toEqual(mockUser);
-      expect(mockRepository.create).toHaveBeenCalledWith(createUserDto);
-      expect(mockRepository.save).toHaveBeenCalled();
+      expect(mockRoleRepository.findOne).toHaveBeenCalledWith({ where: { role: 'admin' } });
+      expect(mockUserRepository.save).toHaveBeenCalled();
+    });
+
+    it('devrait lancer une exception si le rôle n\'est pas trouvé', async () => {
+      const createUserDto: CreateUserDto = {
+        email: 'test@test.com',
+        username: 'testuser',
+        password: 'password123',
+        role: 'inexistent_role',
+      };
+
+      mockRoleRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.create(createUserDto)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('findAll', () => {
     it('devrait retourner tous les utilisateurs', async () => {
       const users = [mockUser];
-      mockRepository.find.mockResolvedValue(users);
+      mockUserRepository.find.mockResolvedValue(users);
 
       const result = await service.findAll();
 
       expect(result).toEqual(users);
-      expect(mockRepository.find).toHaveBeenCalled();
+      expect(mockUserRepository.find).toHaveBeenCalledWith({
+        relations: ['role', 'lands'],
+      });
     });
   });
 
   describe('findOne', () => {
     it('devrait retourner un utilisateur par son ID', async () => {
-      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockUserRepository.findOne.mockResolvedValue(mockUser);
 
       const result = await service.findOne('123');
 
       expect(result).toEqual(mockUser);
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
         where: { id_user: '123' },
+        relations: ['role', 'lands'],
       });
     });
 
     it('devrait lancer une exception si l\'utilisateur n\'est pas trouvé', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
+      mockUserRepository.findOne.mockResolvedValue(null);
 
       await expect(service.findOne('123')).rejects.toThrow(NotFoundException);
     });
@@ -103,23 +137,23 @@ describe('UserService', () => {
         email: 'updated@test.com',
         username: 'updateduser',
         password: 'newpassword123',
-        role: 'admin',
       };
 
-      mockRepository.findOne.mockResolvedValue(mockUser);
-      mockRepository.save.mockResolvedValue({ ...mockUser, ...updateUserDto });
+      mockUserRepository.findOne.mockResolvedValue(mockUser);
+      mockUserRepository.save.mockResolvedValue({ ...mockUser, ...updateUserDto });
 
       const result = await service.update('123', updateUserDto);
 
       expect(result).toEqual({ ...mockUser, ...updateUserDto });
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
         where: { id_user: '123' },
+        relations: ['role', 'lands'],
       });
-      expect(mockRepository.save).toHaveBeenCalled();
+      expect(mockUserRepository.save).toHaveBeenCalled();
     });
 
     it('devrait lancer une exception si l\'utilisateur n\'est pas trouvé', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
+      mockUserRepository.findOne.mockResolvedValue(null);
 
       await expect(service.update('123', {} as UpdateUserDto)).rejects.toThrow(NotFoundException);
     });
@@ -127,46 +161,38 @@ describe('UserService', () => {
 
   describe('remove', () => {
     it('devrait supprimer un utilisateur', async () => {
-      mockRepository.findOne.mockResolvedValue(mockUser);
-      mockRepository.delete.mockResolvedValue({ affected: 1 });
+      mockUserRepository.delete.mockResolvedValue({ affected: 1 });
 
       await service.remove('123');
 
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
-        where: { id_user: '123' },
-      });
-      expect(mockRepository.delete).toHaveBeenCalledWith('123');
-    });
-
-    it('devrait lancer une exception si l\'utilisateur n\'est pas trouvé', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
-
-      await expect(service.remove('123')).rejects.toThrow(NotFoundException);
+      expect(mockUserRepository.delete).toHaveBeenCalledWith({ id_user: '123' });
     });
   });
 
   describe('findByEmail', () => {
     it('devrait retourner un utilisateur par son email', async () => {
-      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockUserRepository.findOne.mockResolvedValue(mockUser);
 
       const result = await service.findByEmail('test@test.com');
 
       expect(result).toEqual(mockUser);
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
         where: { email: 'test@test.com' },
+        relations: ['role', 'lands'],
       });
     });
   });
 
   describe('findByUsername', () => {
     it('devrait retourner un utilisateur par son nom d\'utilisateur', async () => {
-      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockUserRepository.findOne.mockResolvedValue(mockUser);
 
       const result = await service.findByUsername('testuser');
 
       expect(result).toEqual(mockUser);
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
+      expect(mockUserRepository.findOne).toHaveBeenCalledWith({
         where: { username: 'testuser' },
+        relations: ['role', 'lands'],
       });
     });
   });

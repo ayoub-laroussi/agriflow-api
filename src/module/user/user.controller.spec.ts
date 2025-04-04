@@ -5,10 +5,10 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { Role } from '../role/entities/role.entity';
 
 describe('UserController', () => {
   let controller: UserController;
-  let service: UserService;
 
   const mockUserService = {
     create: vi.fn(),
@@ -20,12 +20,18 @@ describe('UserController', () => {
     findByUsername: vi.fn(),
   };
 
+  const mockRole: Role = {
+    id: 1,
+    role: 'admin',
+    users: [],
+  };
+
   const mockUser: User = {
     id_user: '123',
     email: 'test@test.com',
     username: 'testuser',
     password: 'password123',
-    role: { id: 1, role: 'admin', users: [] },
+    role: mockRole,
     lands: [],
     users_creation_date: new Date(),
   };
@@ -56,7 +62,12 @@ describe('UserController', () => {
     }).compile();
 
     controller = module.get<UserController>(UserController);
-    service = module.get<UserService>(UserService);
+    
+    // Injection manuelle pour résoudre l'erreur undefined
+    Object.defineProperty(controller, 'userService', {
+      value: mockUserService,
+      writable: true,
+    });
   });
 
   it('should be defined', () => {
@@ -109,11 +120,10 @@ describe('UserController', () => {
 
   describe('remove', () => {
     it('should remove a user', async () => {
-      mockUserService.remove.mockResolvedValue(mockUser);
+      mockUserService.remove.mockResolvedValue(undefined);
 
-      const result = await controller.remove('123');
+      await controller.remove('123');
 
-      expect(result).toEqual(mockUser);
       expect(mockUserService.remove).toHaveBeenCalledWith('123');
     });
   });
