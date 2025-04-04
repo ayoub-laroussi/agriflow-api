@@ -8,7 +8,6 @@ import { Land } from './entities/land.entity';
 
 describe('LandController', () => {
   let controller: LandController;
-  let service: LandService;
 
   const mockLandService = {
     create: vi.fn(),
@@ -16,7 +15,7 @@ describe('LandController', () => {
     findOne: vi.fn(),
     update: vi.fn(),
     remove: vi.fn(),
-    findByUser: vi.fn(),
+    findByUserId: vi.fn(),
   };
 
   const mockLand: Land = {
@@ -43,7 +42,15 @@ describe('LandController', () => {
     }).compile();
 
     controller = module.get<LandController>(LandController);
-    service = module.get<LandService>(LandService);
+    
+    // Ajouter manuellement le service au contrôleur
+    Object.defineProperty(controller, 'landService', {
+      value: mockLandService,
+      writable: true,
+    });
+    
+    // Réinitialiser les mocks
+    vi.clearAllMocks();
   });
 
   describe('create', () => {
@@ -116,12 +123,12 @@ describe('LandController', () => {
   describe('findByUserId', () => {
     it('devrait retourner les terrains d\'un utilisateur', async () => {
       const lands = [mockLand];
-      mockLandService.findByUser.mockResolvedValue(lands);
+      mockLandService.findByUserId.mockResolvedValue(lands);
 
       const result = await controller.findByUserId('456');
 
       expect(result).toEqual(lands);
-      expect(mockLandService.findByUser).toHaveBeenCalledWith('456');
+      expect(mockLandService.findByUserId).toHaveBeenCalledWith('456');
     });
   });
 }); 
