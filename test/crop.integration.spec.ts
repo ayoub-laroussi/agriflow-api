@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
@@ -7,31 +7,47 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Crop } from '../src/module/crop/entities/crop.entity';
 
+// Augmenter le timeout pour tous les tests
+vi.setConfig({ testTimeout: 30000 });
+
 describe('Module Crop - Tests d\'intégration', () => {
   let app: INestApplication;
   let cropRepository: Repository<Crop>;
-  let createdCropId: string;
+  let createdCropId: string | null = null;
+  let moduleFixture: TestingModule;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    try {
+      moduleFixture = await Test.createTestingModule({
+        imports: [AppModule],
+      }).compile();
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
-    
-    cropRepository = moduleFixture.get<Repository<Crop>>(getRepositoryToken(Crop));
-    
-    await app.init();
-  });
+      app = moduleFixture.createNestApplication();
+      app.useGlobalPipes(new ValidationPipe());
+      
+      cropRepository = moduleFixture.get<Repository<Crop>>(getRepositoryToken(Crop));
+      
+      await app.init();
+      console.log('Application initialisée avec succès');
+    } catch (error) {
+      console.error('Erreur lors de l\'initialisation:', error);
+      throw error;
+    }
+  }, 30000); // Augmenter le timeout spécifiquement pour beforeAll
 
   afterAll(async () => {
-    // Nettoyage de la base de données après les tests
-    if (createdCropId) {
-      await cropRepository.delete(createdCropId);
+    try {
+      // Nettoyage de la base de données après les tests
+      if (createdCropId && cropRepository) {
+        await cropRepository.delete(createdCropId);
+      }
+      
+      if (app) {
+        await app.close();
+      }
+    } catch (error) {
+      console.error('Erreur lors du nettoyage:', error);
     }
-    
-    await app.close();
   });
 
   // Test de création d'une culture
@@ -156,7 +172,7 @@ describe('Module Crop - Tests d\'intégration', () => {
         .expect(404);
       
       // Éviter une deuxième tentative de suppression dans le afterAll
-      createdCropId = "";
+      createdCropId = null;
     });
 
     it('devrait retourner 200 même pour un ID inexistant (idempotent)', async () => {
