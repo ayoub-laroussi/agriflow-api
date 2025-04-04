@@ -14,7 +14,13 @@ export class CultivationSpaceService {
 
   async create(createCultivationSpaceDto: CreateCultivationSpaceDto): Promise<CultivationSpace> {
     const cultivationSpace = new CultivationSpace();
-    Object.assign(cultivationSpace, createCultivationSpaceDto);
+    
+    // Mappage manuel des propriétés du DTO vers l'entité
+    cultivationSpace.name = createCultivationSpaceDto.cultivation_space_name;
+    cultivationSpace.area = createCultivationSpaceDto.cultivation_spaces_area || 0;
+    cultivationSpace.description = createCultivationSpaceDto.cultivation_spaces_commentary || '';
+    cultivationSpace.landId = createCultivationSpaceDto.id_land;
+    
     return await this.cultivationSpaceRepository.save(cultivationSpace);
   }
 
