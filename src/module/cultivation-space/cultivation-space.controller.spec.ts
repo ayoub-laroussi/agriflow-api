@@ -2,10 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CultivationSpaceController } from './cultivation-space.controller';
 import { CultivationSpaceService } from './cultivation-space.service';
+import { CreateCultivationSpaceDto } from './dto/create-cultivation-space.dto';
+import { UpdateCultivationSpaceDto } from './dto/update-cultivation-space.dto';
 
 describe('CultivationSpaceController', () => {
   let controller: CultivationSpaceController;
-  let service: CultivationSpaceService;
 
   const mockCultivationSpaceService = {
     create: vi.fn(),
@@ -13,20 +14,21 @@ describe('CultivationSpaceController', () => {
     findOne: vi.fn(),
     update: vi.fn(),
     remove: vi.fn(),
-    findByLand: vi.fn(),
+    findByLandId: vi.fn(),
   };
 
   const mockCultivationSpace = {
-    id_cultivation_space: '123',
-    cultivation_space_name: 'Espace Test',
-    cultivation_space_description: 'Description de l\'espace',
-    cultivation_space_size: 50,
-    cultivation_space_location: 'Location Test',
-    cultivation_space_creation_date: new Date(),
+    id: '123',
+    name: 'Espace Test',
+    description: 'Description de l\'espace',
+    area: 50,
+    landId: '456',
     land: {
       id_land: '456',
       land_name: 'Terrain Test',
     },
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   beforeEach(async () => {
@@ -41,16 +43,20 @@ describe('CultivationSpaceController', () => {
     }).compile();
 
     controller = module.get<CultivationSpaceController>(CultivationSpaceController);
-    service = module.get<CultivationSpaceService>(CultivationSpaceService);
+    
+    // Injection manuelle pour résoudre l'erreur undefined
+    Object.defineProperty(controller, 'cultivationSpaceService', {
+      value: mockCultivationSpaceService,
+      writable: true,
+    });
   });
 
   describe('create', () => {
     it('devrait créer un nouvel espace de culture', async () => {
-      const createCultivationSpaceDto = {
+      const createCultivationSpaceDto: CreateCultivationSpaceDto = {
         cultivation_space_name: 'Espace Test',
-        cultivation_space_description: 'Description de l\'espace',
-        cultivation_space_size: 50,
-        cultivation_space_location: 'Location Test',
+        cultivation_spaces_commentary: 'Description de l\'espace',
+        cultivation_spaces_area: 50,
         id_land: '456'
       };
 
@@ -88,12 +94,12 @@ describe('CultivationSpaceController', () => {
 
   describe('update', () => {
     it('devrait mettre à jour un espace de culture', async () => {
-      const updateCultivationSpaceDto = {
+      const updateCultivationSpaceDto: UpdateCultivationSpaceDto = {
         cultivation_space_name: 'Nouvel Espace',
-        cultivation_space_size: 75,
+        cultivation_spaces_area: 75,
       };
 
-      const updatedSpace = { ...mockCultivationSpace, ...updateCultivationSpaceDto };
+      const updatedSpace = { ...mockCultivationSpace, name: 'Nouvel Espace', area: 75 };
       mockCultivationSpaceService.update.mockResolvedValue(updatedSpace);
 
       const result = await controller.update('123', updateCultivationSpaceDto);
@@ -116,12 +122,12 @@ describe('CultivationSpaceController', () => {
   describe('findByLand', () => {
     it('devrait retourner les espaces de culture d\'un terrain', async () => {
       const spaces = [mockCultivationSpace];
-      mockCultivationSpaceService.findByLand.mockResolvedValue(spaces);
+      mockCultivationSpaceService.findByLandId.mockResolvedValue(spaces);
 
       const result = await controller.findByLandId('456');
 
       expect(result).toEqual(spaces);
-      expect(mockCultivationSpaceService.findByLand).toHaveBeenCalledWith('456');
+      expect(mockCultivationSpaceService.findByLandId).toHaveBeenCalledWith('456');
     });
   });
 }); 
