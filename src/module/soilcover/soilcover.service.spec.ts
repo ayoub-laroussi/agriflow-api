@@ -24,6 +24,8 @@ describe('SoilCoverService', () => {
   const mockSoilCover: SoilCover = {
     id_soil_cover: '123',
     type_soil_cover: 'Minéral',
+    soilCoverDate: new Date(),
+    soilCoverCommentary: 'Description du paillis',
     created_at: new Date(),
     updated_at: new Date(),
   };
@@ -53,6 +55,9 @@ describe('SoilCoverService', () => {
 
     service = module.get<SoilCoverService>(SoilCoverService);
     repository = module.get<Repository<SoilCover>>(getRepositoryToken(SoilCover));
+    
+    // Réinitialiser les mocks
+    vi.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -62,14 +67,18 @@ describe('SoilCoverService', () => {
 
   describe('create', () => {
     it('devrait créer une nouvelle couverture du sol', async () => {
-      const newSoilCover = new SoilCover();
-      Object.assign(newSoilCover, createSoilCoverDto);
       mockRepository.save.mockResolvedValue(mockSoilCover);
 
       const result = await service.create(createSoilCoverDto);
 
       expect(result).toEqual(mockSoilCover);
       expect(mockRepository.save).toHaveBeenCalled();
+      
+      // Vérifier que les propriétés du DTO sont correctement assignées
+      const savedObject = mockRepository.save.mock.calls[0][0];
+      expect(savedObject).toHaveProperty('type_soil_cover', 'Minéral');
+      expect(savedObject).toHaveProperty('soilCoverCommentary', 'Description du paillis');
+      expect(savedObject).toHaveProperty('soilCoverDate');
     });
   });
 
@@ -111,6 +120,9 @@ describe('SoilCoverService', () => {
       const result = await service.update('123', updateSoilCoverDto);
 
       expect(result).toEqual({ ...mockSoilCover, ...updateSoilCoverDto });
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id_soil_cover: '123' },
+      });
       expect(mockRepository.save).toHaveBeenCalled();
     });
 
@@ -128,6 +140,9 @@ describe('SoilCoverService', () => {
 
       await service.remove('123');
 
+      expect(mockRepository.findOne).toHaveBeenCalledWith({
+        where: { id_soil_cover: '123' },
+      });
       expect(mockRepository.delete).toHaveBeenCalledWith({ id_soil_cover: '123' });
     });
 

@@ -8,7 +8,14 @@ import { SoilCover } from './entities/soilcover.entity';
 
 describe('SoilCoverController', () => {
   let controller: SoilCoverController;
-  let soilCoverService: SoilCoverService;
+
+  const mockSoilCoverService = {
+    create: vi.fn(),
+    findAll: vi.fn(),
+    findOne: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+  };
 
   const mockSoilCover: SoilCover = {
     id_soil_cover: '123',
@@ -37,24 +44,32 @@ describe('SoilCoverController', () => {
       providers: [
         {
           provide: SoilCoverService,
-          useValue: {
-            create: vi.fn().mockResolvedValue(mockSoilCover),
-            findAll: vi.fn().mockResolvedValue([mockSoilCover]),
-            findOne: vi.fn().mockResolvedValue(mockSoilCover),
-            update: vi.fn().mockResolvedValue(mockSoilCover),
-            remove: vi.fn().mockResolvedValue(undefined),
-          },
+          useValue: mockSoilCoverService,
         },
       ],
     }).compile();
 
     controller = module.get<SoilCoverController>(SoilCoverController);
-    soilCoverService = module.get<SoilCoverService>(SoilCoverService);
+    
+    // Ajouter manuellement le service au contrôleur
+    Object.defineProperty(controller, 'soilCoverService', {
+      value: mockSoilCoverService,
+      writable: true,
+    });
+    
+    // Réinitialiser les mocks
+    vi.clearAllMocks();
+    
+    // Configuration des mocks pour les tests
+    mockSoilCoverService.create.mockResolvedValue(mockSoilCover);
+    mockSoilCoverService.findAll.mockResolvedValue([mockSoilCover]);
+    mockSoilCoverService.findOne.mockResolvedValue(mockSoilCover);
+    mockSoilCoverService.update.mockResolvedValue(mockSoilCover);
+    mockSoilCoverService.remove.mockResolvedValue(undefined);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
-    expect(soilCoverService).toBeDefined();
   });
 
   describe('create', () => {
@@ -62,7 +77,7 @@ describe('SoilCoverController', () => {
       const result = await controller.create(createSoilCoverDto);
 
       expect(result).toEqual(mockSoilCover);
-      expect(soilCoverService.create).toHaveBeenCalledWith(createSoilCoverDto);
+      expect(mockSoilCoverService.create).toHaveBeenCalledWith(createSoilCoverDto);
     });
   });
 
@@ -71,7 +86,7 @@ describe('SoilCoverController', () => {
       const result = await controller.findAll();
 
       expect(result).toEqual([mockSoilCover]);
-      expect(soilCoverService.findAll).toHaveBeenCalled();
+      expect(mockSoilCoverService.findAll).toHaveBeenCalled();
     });
   });
 
@@ -80,7 +95,7 @@ describe('SoilCoverController', () => {
       const result = await controller.findOne('123');
 
       expect(result).toEqual(mockSoilCover);
-      expect(soilCoverService.findOne).toHaveBeenCalledWith('123');
+      expect(mockSoilCoverService.findOne).toHaveBeenCalledWith('123');
     });
   });
 
@@ -89,7 +104,7 @@ describe('SoilCoverController', () => {
       const result = await controller.update('123', updateSoilCoverDto);
 
       expect(result).toEqual(mockSoilCover);
-      expect(soilCoverService.update).toHaveBeenCalledWith('123', updateSoilCoverDto);
+      expect(mockSoilCoverService.update).toHaveBeenCalledWith('123', updateSoilCoverDto);
     });
   });
 
@@ -97,7 +112,7 @@ describe('SoilCoverController', () => {
     it('devrait supprimer une couverture du sol', async () => {
       await controller.remove('123');
 
-      expect(soilCoverService.remove).toHaveBeenCalledWith('123');
+      expect(mockSoilCoverService.remove).toHaveBeenCalledWith('123');
     });
   });
 }); 
