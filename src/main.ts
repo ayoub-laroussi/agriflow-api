@@ -23,8 +23,34 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('AgriFlow API')
-    .setDescription('API de gestion des exploitations agricoles')
+    .setDescription(`
+      API de gestion des exploitations agricoles permettant la gestion des terrains, 
+      des espaces de culture, des planches de culture et des cultures.
+      
+      ## Fonctionnalités principales
+      
+      ### Gestion des terrains
+      Permet de créer, consulter, modifier et supprimer des terrains.
+      
+      ### Gestion des espaces de culture
+      Permet de gérer les différents espaces de culture au sein d'un terrain (rizière, champ, verger, potager).
+      
+      ### Gestion des planches de culture
+      Permet de définir des planches de culture à l'intérieur d'un espace de culture,
+      avec leurs caractéristiques (dimensions, type de sol, pH, etc.) et les cultures qui y sont associées.
+      
+      ### Gestion des cultures
+      Permet de suivre les différentes cultures, leurs périodes de plantation, leurs statuts et autres informations.
+    `)
     .setVersion('1.0')
+    .addTag('lands', 'Gestion des terrains')
+    .addTag('cultivation-spaces', 'Gestion des espaces de culture')
+    .addTag('cultivation-beds', 'Gestion des planches de culture')
+    .addTag('crops', 'Gestion des cultures')
+    .addTag('roles', 'Gestion des rôles utilisateurs')
+    .addTag('users', 'Gestion des utilisateurs')
+    .addTag('soilcover', 'Gestion des couvertures de sol')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
