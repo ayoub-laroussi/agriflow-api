@@ -1,8 +1,23 @@
+/**
+ * Entité représentant un utilisateur dans le système
+ * 
+ * Cette entité définit la structure de données d'un utilisateur dans l'application,
+ * incluant ses informations personnelles, son rôle et ses relations avec d'autres entités.
+ * Elle est mappée à la table 'users' dans la base de données.
+ * 
+ * @module User
+ */
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../role/entities/role.entity';
 import { Land } from '../../land/entities/land.entity';
 
+/**
+ * Entité Utilisateur
+ * 
+ * Représente un utilisateur du système avec ses propriétés
+ * et relations avec d'autres entités comme les rôles et terrains.
+ */
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
