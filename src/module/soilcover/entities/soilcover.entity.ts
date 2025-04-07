@@ -1,6 +1,21 @@
+/**
+ * Entité représentant une couverture de sol dans le système
+ * 
+ * Cette entité définit la structure de données d'une couverture de sol dans l'application,
+ * incluant son type, sa date de mise en place, et des commentaires associés.
+ * Elle est mappée à la table 'soil_cover' dans la base de données.
+ * 
+ * @module SoilCover
+ */
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
+/**
+ * Entité Couverture de Sol
+ * 
+ * Représente une couverture de sol avec ses propriétés et métadonnées.
+ * Utilisée pour suivre les différentes couvertures de sol appliquées dans les espaces de culture.
+ */
 @Entity('soil_cover')
 export class SoilCover {
   @PrimaryGeneratedColumn('uuid')
