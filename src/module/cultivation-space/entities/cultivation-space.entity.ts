@@ -1,9 +1,26 @@
+/**
+ * Entité représentant un espace de culture
+ * 
+ * Cette entité définit la structure de données pour les espaces de culture,
+ * qui sont des zones dédiées à la culture sur un terrain. Un espace de culture
+ * peut contenir plusieurs planches de culture et être associé à différentes cultures.
+ * 
+ * @module CultivationSpace
+ */
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Land } from '../../land/entities/land.entity';
 import { Crop } from '../../crop/entities/crop.entity';
 import { CultivationBed } from '../../cultivation-bed/entities/cultivation-bed.entity';
 
+/**
+ * Classe représentant un espace de culture dans le système
+ * 
+ * Un espace de culture est une zone dédiée à la culture sur un terrain.
+ * Il peut être de différents types (rizière, champ, verger, potager) et
+ * peut contenir plusieurs planches de culture. Il est toujours associé
+ * à un terrain et peut être directement lié à des cultures.
+ */
 @Entity('cultivation_spaces')
 export class CultivationSpace {
   @PrimaryGeneratedColumn('uuid')

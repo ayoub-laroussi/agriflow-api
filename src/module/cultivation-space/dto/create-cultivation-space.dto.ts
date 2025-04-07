@@ -1,6 +1,21 @@
+/**
+ * DTO pour la création d'un espace de culture
+ * 
+ * Ce DTO définit la structure des données attendues lors de la création
+ * d'un nouvel espace de culture via l'API. Il inclut des validations
+ * pour s'assurer que les données sont correctement formatées.
+ * 
+ * @module CreateCultivationSpaceDto
+ */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsOptional, IsNotEmpty, MaxLength, Min, Max } from 'class-validator';
 
+/**
+ * Classe définissant les données requises pour créer un espace de culture
+ * 
+ * Contient toutes les propriétés nécessaires pour créer un nouvel espace
+ * de culture, avec des validations appropriées pour chaque champ.
+ */
 export class CreateCultivationSpaceDto {
   @ApiProperty({ description: 'Nom de l\'espace de culture' })
   @IsString()
