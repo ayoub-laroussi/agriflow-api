@@ -3,7 +3,7 @@
  * 
  * Ce contrôleur expose les endpoints REST pour la gestion des actions agricoles.
  * Il fournit des routes pour créer, lire, mettre à jour et supprimer des actions,
- * ainsi que des routes spécifiques pour rechercher des actions par date.
+ * ainsi que des routes spécifiques pour rechercher des actions par date et type.
  * 
  * @module AgriculturalActionController
  */
@@ -11,8 +11,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { AgriculturalActionService } from './agricultural-action.service';
 import { CreateAgriculturalActionDto } from './dto/create-agricultural-action.dto';
 import { UpdateAgriculturalActionDto } from './dto/update-agricultural-action.dto';
+import { FindByDateRangeDto } from './dto/find-by-date-range.dto';
+import { FindByTypeDto } from './dto/find-by-type.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
-import { AgriculturalAction } from './entities/agricultural-action.entity';
+import { AgriculturalAction, AgriculturalActionType } from './entities/agricultural-action.entity';
 
 /**
  * Contrôleur de gestion des actions agricoles
@@ -156,5 +158,28 @@ export class AgriculturalActionController {
     @Query('endDate') endDate: Date,
   ) {
     return this.agriculturalActionService.findByDateRange(startDate, endDate);
+  }
+
+  /**
+   * Récupère les actions agricoles par type
+   * 
+   * @param {FindByTypeDto} findByTypeDto - Type d'action à rechercher
+   * @returns {Promise<AgriculturalAction[]>} Liste des actions du type spécifié
+   */
+  @Get('by-type')
+  @ApiOperation({ summary: 'Récupérer les actions agricoles par type' })
+  @ApiQuery({ 
+    name: 'type', 
+    description: 'Type d\'action agricole',
+    enum: AgriculturalActionType,
+    example: AgriculturalActionType.PLANTATION
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Liste des actions du type spécifié',
+    type: [AgriculturalAction] 
+  })
+  findByType(@Query('type') type: AgriculturalActionType) {
+    return this.agriculturalActionService.findByType(type);
   }
 }

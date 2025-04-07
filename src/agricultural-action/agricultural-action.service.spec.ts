@@ -18,6 +18,8 @@ import { Crop } from '../module/crop/entities/crop.entity';
 import { CreateAgriculturalActionDto } from './dto/create-agricultural-action.dto';
 import { UpdateAgriculturalActionDto } from './dto/update-agricultural-action.dto';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { Between } from 'typeorm';
+import { AgriculturalActionType } from './entities/agricultural-action.entity';
 
 describe('AgriculturalActionService', () => {
   let service: AgriculturalActionService;
@@ -222,23 +224,43 @@ describe('AgriculturalActionService', () => {
   });
 
   describe('findByDateRange', () => {
-    const startDate = new Date('2024-01-01');
-    const endDate = new Date('2024-12-31');
+    const startDate = new Date('2023-01-01');
+    const endDate = new Date('2023-12-31');
     const mockActions = [
-      { id: '1', type: 'plantation', actionDate: new Date('2024-06-01') },
-      { id: '2', type: 'arrosage', actionDate: new Date('2024-06-15') },
+      { id: '1', type: AgriculturalActionType.PLANTATION, actionDate: new Date('2023-06-01') },
+      { id: '2', type: AgriculturalActionType.ARROSAGE, actionDate: new Date('2023-06-15') },
     ];
 
     it('devrait retourner les actions dans la période spécifiée', async () => {
-      vi.spyOn(agriculturalActionRepository, 'find').mockResolvedValue(mockActions as any);
+      mockAgriculturalActionRepository.find.mockResolvedValue(mockActions);
 
       const result = await service.findByDateRange(startDate, endDate);
 
       expect(result).toEqual(mockActions);
-      expect(agriculturalActionRepository.find).toHaveBeenCalledWith({
+      expect(mockAgriculturalActionRepository.find).toHaveBeenCalledWith({
         where: {
-          actionDate: expect.any(Object),
+          actionDate: Between(startDate, endDate),
         },
+        relations: ['cultivationSpace', 'cultivationBed', 'crop'],
+      });
+    });
+  });
+
+  describe('findByType', () => {
+    const actionType = AgriculturalActionType.PLANTATION;
+    const mockActions = [
+      { id: '1', type: AgriculturalActionType.PLANTATION, actionDate: new Date('2023-06-01') },
+      { id: '2', type: AgriculturalActionType.PLANTATION, actionDate: new Date('2023-07-15') },
+    ];
+
+    it('devrait retourner les actions du type spécifié', async () => {
+      mockAgriculturalActionRepository.find.mockResolvedValue(mockActions);
+
+      const result = await service.findByType(actionType);
+
+      expect(result).toEqual(mockActions);
+      expect(mockAgriculturalActionRepository.find).toHaveBeenCalledWith({
+        where: { type: actionType },
         relations: ['cultivationSpace', 'cultivationBed', 'crop'],
       });
     });

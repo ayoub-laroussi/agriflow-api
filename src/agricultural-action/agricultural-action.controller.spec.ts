@@ -12,18 +12,19 @@ import { AgriculturalActionService } from './agricultural-action.service';
 import { CreateAgriculturalActionDto } from './dto/create-agricultural-action.dto';
 import { UpdateAgriculturalActionDto } from './dto/update-agricultural-action.dto';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { AgriculturalActionType } from './entities/agricultural-action.entity';
 
 describe('AgriculturalActionController', () => {
   let controller: AgriculturalActionController;
-  let service: AgriculturalActionService;
 
-  const mockService = {
+  const mockAgriculturalActionService = {
     create: vi.fn(),
     findAll: vi.fn(),
     findOne: vi.fn(),
     update: vi.fn(),
     remove: vi.fn(),
     findByDateRange: vi.fn(),
+    findByType: vi.fn(),
   };
 
   beforeEach(async () => {
@@ -32,13 +33,21 @@ describe('AgriculturalActionController', () => {
       providers: [
         {
           provide: AgriculturalActionService,
-          useValue: mockService,
+          useValue: mockAgriculturalActionService,
         },
       ],
     }).compile();
 
     controller = module.get<AgriculturalActionController>(AgriculturalActionController);
-    service = module.get<AgriculturalActionService>(AgriculturalActionService);
+
+    // Injection manuelle pour résoudre l'erreur undefined
+    Object.defineProperty(controller, 'agriculturalActionService', {
+      value: mockAgriculturalActionService,
+      writable: true,
+    });
+
+    // Réinitialiser les mocks avant chaque test
+    vi.clearAllMocks();
   });
 
   it('devrait être défini', () => {
@@ -58,12 +67,12 @@ describe('AgriculturalActionController', () => {
     const mockAction = { id: '1', ...createDto };
 
     it('devrait créer une action agricole', async () => {
-      vi.spyOn(service, 'create').mockResolvedValue(mockAction);
+      mockAgriculturalActionService.create.mockResolvedValue(mockAction);
 
       const result = await controller.create(createDto);
 
       expect(result).toEqual(mockAction);
-      expect(service.create).toHaveBeenCalledWith(createDto);
+      expect(mockAgriculturalActionService.create).toHaveBeenCalledWith(createDto);
     });
   });
 
@@ -74,12 +83,12 @@ describe('AgriculturalActionController', () => {
     ];
 
     it('devrait retourner toutes les actions agricoles', async () => {
-      vi.spyOn(service, 'findAll').mockResolvedValue(mockActions);
+      mockAgriculturalActionService.findAll.mockResolvedValue(mockActions);
 
       const result = await controller.findAll();
 
       expect(result).toEqual(mockActions);
-      expect(service.findAll).toHaveBeenCalled();
+      expect(mockAgriculturalActionService.findAll).toHaveBeenCalled();
     });
   });
 
@@ -87,12 +96,12 @@ describe('AgriculturalActionController', () => {
     const mockAction = { id: '1', type: 'plantation' };
 
     it('devrait retourner une action agricole par son ID', async () => {
-      vi.spyOn(service, 'findOne').mockResolvedValue(mockAction);
+      mockAgriculturalActionService.findOne.mockResolvedValue(mockAction);
 
       const result = await controller.findOne('1');
 
       expect(result).toEqual(mockAction);
-      expect(service.findOne).toHaveBeenCalledWith('1');
+      expect(mockAgriculturalActionService.findOne).toHaveBeenCalledWith('1');
     });
   });
 
@@ -105,40 +114,57 @@ describe('AgriculturalActionController', () => {
     const mockUpdatedAction = { id: '1', ...updateDto };
 
     it('devrait mettre à jour une action agricole', async () => {
-      vi.spyOn(service, 'update').mockResolvedValue(mockUpdatedAction);
+      mockAgriculturalActionService.update.mockResolvedValue(mockUpdatedAction);
 
       const result = await controller.update('1', updateDto);
 
       expect(result).toEqual(mockUpdatedAction);
-      expect(service.update).toHaveBeenCalledWith('1', updateDto);
+      expect(mockAgriculturalActionService.update).toHaveBeenCalledWith('1', updateDto);
     });
   });
 
   describe('remove', () => {
     it('devrait supprimer une action agricole', async () => {
-      vi.spyOn(service, 'remove').mockResolvedValue(undefined);
+      mockAgriculturalActionService.remove.mockResolvedValue(undefined);
 
       await controller.remove('1');
 
-      expect(service.remove).toHaveBeenCalledWith('1');
+      expect(mockAgriculturalActionService.remove).toHaveBeenCalledWith('1');
     });
   });
 
   describe('findByDateRange', () => {
-    const startDate = new Date('2024-01-01');
-    const endDate = new Date('2024-12-31');
+    const startDate = new Date('2023-01-01');
+    const endDate = new Date('2023-12-31');
     const mockActions = [
-      { id: '1', type: 'plantation', actionDate: new Date('2024-06-01') },
-      { id: '2', type: 'arrosage', actionDate: new Date('2024-06-15') },
+      { id: '1', type: AgriculturalActionType.PLANTATION, actionDate: new Date('2023-06-01') },
+      { id: '2', type: AgriculturalActionType.ARROSAGE, actionDate: new Date('2023-06-15') },
     ];
 
     it('devrait retourner les actions dans la période spécifiée', async () => {
-      vi.spyOn(service, 'findByDateRange').mockResolvedValue(mockActions);
+      mockAgriculturalActionService.findByDateRange.mockResolvedValue(mockActions);
 
       const result = await controller.findByDateRange(startDate, endDate);
 
       expect(result).toEqual(mockActions);
-      expect(service.findByDateRange).toHaveBeenCalledWith(startDate, endDate);
+      expect(mockAgriculturalActionService.findByDateRange).toHaveBeenCalledWith(startDate, endDate);
+    });
+  });
+
+  describe('findByType', () => {
+    const actionType = AgriculturalActionType.PLANTATION;
+    const mockActions = [
+      { id: '1', type: AgriculturalActionType.PLANTATION, actionDate: new Date('2023-06-01') },
+      { id: '2', type: AgriculturalActionType.PLANTATION, actionDate: new Date('2023-07-15') },
+    ];
+
+    it('devrait retourner les actions du type spécifié', async () => {
+      mockAgriculturalActionService.findByType.mockResolvedValue(mockActions);
+
+      const result = await controller.findByType(actionType);
+
+      expect(result).toEqual(mockActions);
+      expect(mockAgriculturalActionService.findByType).toHaveBeenCalledWith(actionType);
     });
   });
 });

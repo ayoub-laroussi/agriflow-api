@@ -12,7 +12,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { CreateAgriculturalActionDto } from './dto/create-agricultural-action.dto';
 import { UpdateAgriculturalActionDto } from './dto/update-agricultural-action.dto';
-import { AgriculturalAction } from './entities/agricultural-action.entity';
+import { AgriculturalAction, AgriculturalActionType } from './entities/agricultural-action.entity';
 import { CultivationSpace } from '../module/cultivation-space/entities/cultivation-space.entity';
 import { CultivationBed } from '../module/cultivation-bed/entities/cultivation-bed.entity';
 import { Crop } from '../module/crop/entities/crop.entity';
@@ -182,6 +182,19 @@ export class AgriculturalActionService {
       where: {
         actionDate: Between(startDate, endDate),
       },
+      relations: ['cultivationSpace', 'cultivationBed', 'crop'],
+    });
+  }
+
+  /**
+   * Récupère les actions agricoles par type
+   * 
+   * @param {AgriculturalActionType} type - Type d'action à rechercher
+   * @returns {Promise<AgriculturalAction[]>} Liste des actions du type spécifié
+   */
+  async findByType(type: AgriculturalActionType): Promise<AgriculturalAction[]> {
+    return this.agriculturalActionRepository.find({
+      where: { type },
       relations: ['cultivationSpace', 'cultivationBed', 'crop'],
     });
   }
