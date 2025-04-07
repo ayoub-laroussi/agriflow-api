@@ -1,3 +1,11 @@
+/**
+ * Point d'entrée principal de l'application AgriFlow API
+ * 
+ * Ce fichier initialise l'application NestJS, configure Swagger pour la documentation de l'API,
+ * et met en place les différents middlewares et intercepteurs globaux.
+ * 
+ * @module main
+ */
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -6,6 +14,14 @@ import { ValidationPipe } from '@nestjs/common';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { join } from 'path';
 
+/**
+ * Fonction de démarrage de l'application
+ * 
+ * Initialise l'application NestJS avec Fastify comme adaptateur HTTP,
+ * configure les validations globales, la documentation Swagger et démarre le serveur.
+ * 
+ * @returns {Promise<void>}
+ */
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
