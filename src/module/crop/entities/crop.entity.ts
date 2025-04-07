@@ -14,6 +14,19 @@ import { CultivationSpace } from '../../cultivation-space/entities/cultivation-s
 import { CultivationBed } from '../../cultivation-bed/entities/cultivation-bed.entity';
 
 /**
+ * Énumération des statuts possibles pour une culture
+ */
+export enum CropStatus {
+  INUTILISABLE = 'inutilisable',
+  EN_JACHERE = 'en jachère',
+  EN_PREPARATION = 'en préparation',
+  EN_CULTURE = 'en culture',
+  RECOLTE = 'récolte',
+  ABANDONNE = 'abandonné',
+  DETRUIT = 'détruit'
+}
+
+/**
  * Entité Culture
  * 
  * Représente une culture avec ses propriétés et relations.
@@ -45,9 +58,19 @@ export class Crop {
   @Column({ name: 'plant_date', type: 'date' })
   plantDate: Date;
 
-  @ApiProperty({ description: 'Statut de la culture' })
-  @Column({ name: 'status', length: 20, type: 'varchar' })
-  status: string;
+  @ApiProperty({ 
+    description: 'Statut de la culture',
+    enum: CropStatus,
+    example: CropStatus.EN_CULTURE
+  })
+  @Column({ 
+    name: 'status', 
+    length: 20, 
+    type: 'varchar',
+    enum: CropStatus,
+    default: CropStatus.EN_PREPARATION
+  })
+  status: CropStatus;
 
   @ApiProperty({ description: 'Espaces de culture associés' })
   @ManyToMany(() => CultivationSpace, cultivationSpace => cultivationSpace.crops)

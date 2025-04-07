@@ -17,6 +17,7 @@ import { CultivationSpaceModule } from './module/cultivation-space/cultivation-s
 import { CropModule } from './module/crop/crop.module';
 import { typeOrmConfig } from './config/typeorm.config';
 import { CultivationBedModule } from './module/cultivation-bed/cultivation-bed.module';
+import { AgriculturalActionModule } from './agricultural-action/agricultural-action.module';
 
 /**
  * Module racine de l'application
@@ -35,6 +36,7 @@ import { CultivationBedModule } from './module/cultivation-bed/cultivation-bed.m
     CultivationSpaceModule,
     CropModule,
     CultivationBedModule,
+    AgriculturalActionModule,
   ],
 })
 export class AppModule {}
