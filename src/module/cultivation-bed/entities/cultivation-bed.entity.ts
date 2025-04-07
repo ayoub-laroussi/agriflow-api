@@ -1,8 +1,25 @@
+/**
+ * Entité représentant une planche de culture dans le système
+ * 
+ * Cette entité définit la structure de données d'une planche de culture dans l'application,
+ * incluant ses dimensions, caractéristiques du sol, orientation, et relations avec
+ * les espaces de culture et les cultures qui y sont associées.
+ * Elle est mappée à la table 'cultivation_beds' dans la base de données.
+ * 
+ * @module CultivationBed
+ */
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { CultivationSpace } from '../../cultivation-space/entities/cultivation-space.entity';
 import { Crop } from '../../crop/entities/crop.entity';
 
+/**
+ * Entité Planche de Culture
+ * 
+ * Représente une planche de culture dans un espace de culture spécifique.
+ * Contient les propriétés physiques (dimensions, type de sol) et agronomiques (pH, fertilité)
+ * ainsi que les relations avec l'espace de culture parent et les cultures associées.
+ */
 @Entity('cultivation_beds')
 export class CultivationBed {
   @ApiProperty({ 
@@ -24,7 +41,8 @@ export class CultivationBed {
   @ApiProperty({ 
     description: 'Description détaillée de la planche de culture',
     example: 'Planche de culture destinée aux tomates, située à l\'est du potager',
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'description', type: 'text', nullable: true })
   description: string;
@@ -33,7 +51,8 @@ export class CultivationBed {
     description: 'Longueur de la planche de culture en mètres',
     example: 5.5,
     minimum: 0,
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'length', type: 'decimal', precision: 10, scale: 2, nullable: true })
   length: number;
@@ -42,7 +61,8 @@ export class CultivationBed {
     description: 'Largeur de la planche de culture en mètres',
     example: 1.2,
     minimum: 0,
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'width', type: 'decimal', precision: 10, scale: 2, nullable: true })
   width: number;
@@ -51,7 +71,8 @@ export class CultivationBed {
     description: 'Surface de la planche de culture en mètres carrés',
     example: 6.6,
     minimum: 0,
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'area', type: 'decimal', precision: 10, scale: 2, nullable: true })
   area: number;
@@ -60,7 +81,8 @@ export class CultivationBed {
     description: 'Type de sol de la planche de culture',
     example: 'Argileux',
     maxLength: 50,
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'soil_type', length: 50, type: 'varchar', nullable: true })
   soilType: string;
@@ -70,7 +92,8 @@ export class CultivationBed {
     example: 6.5,
     minimum: 0,
     maximum: 14,
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'ph_level', type: 'decimal', precision: 3, scale: 1, nullable: true })
   phLevel: number;
@@ -79,7 +102,8 @@ export class CultivationBed {
     description: 'Niveau de fertilité du sol (faible, moyen, élevé, etc.)',
     example: 'Moyen',
     maxLength: 50,
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'fertility_level', length: 50, type: 'varchar', nullable: true })
   fertilityLevel: string;
@@ -88,7 +112,8 @@ export class CultivationBed {
     description: 'Niveau de drainage du sol (faible, moyen, bon, etc.)',
     example: 'Bon',
     maxLength: 50,
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'drainage_level', length: 50, type: 'varchar', nullable: true })
   drainageLevel: string;
@@ -97,7 +122,8 @@ export class CultivationBed {
     description: 'Orientation de la planche de culture (nord-sud, est-ouest, etc.)',
     example: 'Nord-Sud',
     maxLength: 50,
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'orientation', length: 50, type: 'varchar', nullable: true })
   orientation: string;
@@ -105,14 +131,14 @@ export class CultivationBed {
   @ApiProperty({ 
     description: 'Commentaire ou notes additionnelles sur la planche de culture',
     example: 'Planche surélevée de 30cm, bordée de pierres',
-    required: false
+    required: false,
+    nullable: true
   })
   @Column({ name: 'commentary', type: 'text', nullable: true })
   commentary: string;
 
   @ApiProperty({ 
-    description: 'Espace de culture parent auquel appartient cette planche',
-    type: () => CultivationSpace,
+    description: 'Espace de culture parent auquel appartient cette planche'
   })
   @ManyToOne(() => CultivationSpace, cultivationSpace => cultivationSpace.cultivationBeds, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'cultivation_space_id' })
@@ -128,8 +154,7 @@ export class CultivationBed {
 
   @ApiProperty({ 
     description: 'Cultures associées à la planche de culture',
-    type: () => [Crop],
-    isArray: true,
+    isArray: true
   })
   @ManyToMany(() => Crop)
   @JoinTable({

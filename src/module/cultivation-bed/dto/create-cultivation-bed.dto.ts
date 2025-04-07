@@ -1,6 +1,21 @@
+/**
+ * DTO pour la création d'une planche de culture
+ * 
+ * Ce DTO (Data Transfer Object) définit la structure des données attendues
+ * lors de la création d'une nouvelle planche de culture via l'API.
+ * Il inclut les validations nécessaires pour garantir l'intégrité des données.
+ * 
+ * @module CreateCultivationBedDto
+ */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsOptional, IsNotEmpty, MaxLength, Min, Max, IsUUID } from 'class-validator';
 
+/**
+ * Données de création d'une planche de culture
+ * 
+ * Définit les champs requis et optionnels avec leurs règles de validation
+ * pour la création d'une nouvelle planche de culture.
+ */
 export class CreateCultivationBedDto {
   @ApiProperty({ 
     description: 'Nom de la planche de culture', 

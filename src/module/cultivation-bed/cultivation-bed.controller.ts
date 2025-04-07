@@ -1,3 +1,12 @@
+/**
+ * Contrôleur de gestion des planches de culture
+ * 
+ * Ce contrôleur expose les endpoints REST pour la gestion des planches de culture,
+ * permettant les opérations CRUD (Create, Read, Update, Delete) ainsi que
+ * des recherches spécifiques par espace de culture.
+ * 
+ * @module CultivationBedController
+ */
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { CultivationBedService } from './cultivation-bed.service';
@@ -5,11 +14,22 @@ import { CreateCultivationBedDto } from './dto/create-cultivation-bed.dto';
 import { UpdateCultivationBedDto } from './dto/update-cultivation-bed.dto';
 import { CultivationBed } from './entities/cultivation-bed.entity';
 
+/**
+ * Contrôleur de gestion des planches de culture
+ * 
+ * Expose les endpoints RESTful pour manipuler les données des planches de culture.
+ * Le préfixe de route est "/cultivation-beds".
+ */
 @ApiTags('cultivation-beds')
 @Controller('cultivation-beds')
 export class CultivationBedController {
   constructor(private readonly cultivationBedService: CultivationBedService) {}
 
+  /**
+   * Crée une nouvelle planche de culture
+   * @param {CreateCultivationBedDto} createCultivationBedDto - Données pour la création de la planche de culture
+   * @returns {Promise<CultivationBed>} Planche de culture créée
+   */
   @Post()
   @ApiOperation({ 
     summary: 'Créer une nouvelle planche de culture',
@@ -41,6 +61,10 @@ export class CultivationBedController {
     return this.cultivationBedService.create(createCultivationBedDto);
   }
 
+  /**
+   * Récupère toutes les planches de culture
+   * @returns {Promise<CultivationBed[]>} Liste de toutes les planches de culture
+   */
   @Get()
   @ApiOperation({ 
     summary: 'Récupérer toutes les planches de culture',
@@ -59,6 +83,11 @@ export class CultivationBedController {
     return this.cultivationBedService.findAll();
   }
 
+  /**
+   * Récupère une planche de culture par son ID
+   * @param {string} id - ID de la planche de culture à récupérer
+   * @returns {Promise<CultivationBed>} Planche de culture trouvée
+   */
   @Get(':id')
   @ApiOperation({ 
     summary: 'Récupérer une planche de culture par son ID',
@@ -87,6 +116,11 @@ export class CultivationBedController {
     return this.cultivationBedService.findOne(id);
   }
 
+  /**
+   * Récupère toutes les planches de culture d'un espace de culture
+   * @param {string} cultivationSpaceId - ID de l'espace de culture
+   * @returns {Promise<CultivationBed[]>} Liste des planches de culture associées à l'espace
+   */
   @Get('cultivation-space/:cultivationSpaceId')
   @ApiOperation({ 
     summary: 'Récupérer toutes les planches de culture d\'un espace de culture',
@@ -115,6 +149,12 @@ export class CultivationBedController {
     return this.cultivationBedService.findByCultivationSpaceId(cultivationSpaceId);
   }
 
+  /**
+   * Met à jour une planche de culture
+   * @param {string} id - ID de la planche de culture à mettre à jour
+   * @param {UpdateCultivationBedDto} updateCultivationBedDto - Données pour la mise à jour
+   * @returns {Promise<CultivationBed>} Planche de culture mise à jour
+   */
   @Patch(':id')
   @ApiOperation({ 
     summary: 'Mettre à jour une planche de culture',
@@ -154,6 +194,11 @@ export class CultivationBedController {
     return this.cultivationBedService.update(id, updateCultivationBedDto);
   }
 
+  /**
+   * Supprime une planche de culture
+   * @param {string} id - ID de la planche de culture à supprimer
+   * @returns {Promise<void>}
+   */
   @Delete(':id')
   @ApiOperation({ 
     summary: 'Supprimer une planche de culture',
