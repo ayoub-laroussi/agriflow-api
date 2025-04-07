@@ -1,7 +1,21 @@
+/**
+ * Entité de rôle
+ * 
+ * Cette entité représente un rôle dans l'application.
+ * Un rôle est associé à plusieurs utilisateurs et définit leurs permissions.
+ * 
+ * @module Role
+ */
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
 
+/**
+ * Entité de rôle
+ * 
+ * Représente un rôle dans l'application avec ses propriétés et relations.
+ * Un rôle peut être associé à plusieurs utilisateurs.
+ */
 @Entity('roles')
 export class Role {
   @PrimaryGeneratedColumn()
