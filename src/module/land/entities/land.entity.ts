@@ -1,8 +1,24 @@
+/**
+ * Entité représentant un terrain
+ * 
+ * Cette entité définit la structure de données pour les terrains dans l'application.
+ * Un terrain est une zone géographique qui peut contenir plusieurs espaces de culture
+ * et est toujours associé à un utilisateur propriétaire.
+ * 
+ * @module Land
+ */
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
 import { CultivationSpace } from '../../cultivation-space/entities/cultivation-space.entity';
 
+/**
+ * Classe représentant un terrain dans le système
+ * 
+ * Un terrain est une zone géographique qui peut contenir plusieurs espaces de culture.
+ * Il est toujours associé à un utilisateur propriétaire et possède des informations
+ * sur sa surface et sa localisation.
+ */
 @Entity('land')
 export class Land {
   @PrimaryGeneratedColumn('uuid')
