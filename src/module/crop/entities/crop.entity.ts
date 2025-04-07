@@ -1,8 +1,24 @@
+/**
+ * Entité représentant une culture dans le système
+ * 
+ * Cette entité définit la structure de données d'une culture dans l'application,
+ * incluant ses propriétés (nom, famille, variété, etc.) et ses relations avec
+ * les espaces de culture et les planches de culture.
+ * Elle est mappée à la table 'crops' dans la base de données.
+ * 
+ * @module Crop
+ */
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { CultivationSpace } from '../../cultivation-space/entities/cultivation-space.entity';
 import { CultivationBed } from '../../cultivation-bed/entities/cultivation-bed.entity';
 
+/**
+ * Entité Culture
+ * 
+ * Représente une culture avec ses propriétés et relations.
+ * Une culture peut être associée à plusieurs espaces de culture et planches de culture.
+ */
 @Entity('crops')
 export class Crop {
   @ApiProperty({ description: 'Identifiant unique de la culture' })

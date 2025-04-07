@@ -1,6 +1,21 @@
+/**
+ * DTO pour la création d'une culture
+ * 
+ * Ce DTO définit la structure des données attendues lors de la création
+ * d'une nouvelle culture via l'API. Il inclut des validations pour s'assurer
+ * que les données sont correctement formatées.
+ * 
+ * @module CreateCropDto
+ */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsDate, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
 
+/**
+ * Classe définissant les données requises pour créer une culture
+ * 
+ * Contient toutes les propriétés nécessaires pour créer une nouvelle culture,
+ * avec des validations appropriées pour chaque champ.
+ */
 export class CreateCropDto {
   @ApiProperty({ description: 'Commentaire sur la culture', required: false })
   @IsString()
