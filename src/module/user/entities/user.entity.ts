@@ -36,14 +36,21 @@ export class User {
   @ApiProperty({ description: 'Mot de passe de l\'utilisateur' })
   password: string;
 
-  @ManyToOne(() => Role)
+  @ManyToOne(() => Role, { lazy: true })
   @JoinColumn({ name: 'role' })
-  @ApiProperty({ description: 'Rôle de l\'utilisateur' })
-  role: Role;
+  @ApiProperty({ 
+    description: 'Rôle de l\'utilisateur',
+    type: () => Role 
+  })
+  role: Promise<Role>;
 
-  @OneToMany(() => Land, land => land.user)
-  @ApiProperty({ description: 'Terrains de l\'utilisateur' })
-  lands: Land[];
+  @OneToMany(() => Land, land => land.user, { lazy: true })
+  @ApiProperty({ 
+    description: 'Terrains de l\'utilisateur',
+    type: () => [Land],
+    isArray: true
+  })
+  lands: Promise<Land[]>;
 
   @CreateDateColumn({ type: 'timestamp' })
   @ApiProperty({ description: 'Date de création de l\'utilisateur' })

@@ -10,9 +10,9 @@
  */
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn, JoinTable, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { CropStatus } from '../../crop-status/entities/crop-status.entity';
 import { CultivationSpace } from '../../cultivation-space/entities/cultivation-space.entity';
 import { CultivationBed } from '../../cultivation-bed/entities/cultivation-bed.entity';
-import { CropStatus } from '../../crop-status/entities/crop-status.entity';
 
 /**
  * Entité Culture
@@ -55,9 +55,10 @@ export class Crop {
   statusId: string;
 
   @ApiProperty({ description: 'Espaces de culture associés' })
-  @ManyToMany(() => CultivationSpace, cultivationSpace => cultivationSpace.crops, {
+  @ManyToMany(() => CultivationSpace, (cultivationSpace) => cultivationSpace.crops, {
     onDelete: 'CASCADE',
-    cascade: true
+    cascade: true,
+    lazy: true
   })
   @JoinTable({
     name: 'is_cultivated',
@@ -70,12 +71,13 @@ export class Crop {
       referencedColumnName: 'id',
     },
   })
-  cultivationSpaces: CultivationSpace[];
+  cultivationSpaces: Promise<CultivationSpace[]>;
 
   @ApiProperty({ description: 'Planches de culture associées' })
-  @ManyToMany(() => CultivationBed, cultivationBed => cultivationBed.crops, {
+  @ManyToMany(() => CultivationBed, (cultivationBed) => cultivationBed.crops, {
     onDelete: 'CASCADE',
-    cascade: true
+    cascade: true,
+    lazy: true
   })
   @JoinTable({
     name: 'cultivation_bed_crops',
@@ -88,7 +90,7 @@ export class Crop {
       referencedColumnName: 'id',
     },
   })
-  cultivationBeds: CultivationBed[];
+  cultivationBeds: Promise<CultivationBed[]>;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;

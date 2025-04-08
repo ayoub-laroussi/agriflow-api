@@ -26,6 +26,11 @@ export class Role {
   @ApiProperty({ description: 'Nom du rôle' })
   role: string;
 
-  @OneToMany(() => User, user => user.role)
-  users: User[];
+  @OneToMany(() => User, user => user.role, { lazy: true })
+  @ApiProperty({
+    description: 'Utilisateurs ayant ce rôle',
+    type: () => [User],
+    isArray: true
+  })
+  users: Promise<User[]>;
 }

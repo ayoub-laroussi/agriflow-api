@@ -49,9 +49,22 @@ export class UserService {
     
     // Assigner les données de l'utilisateur et le rôle
     Object.assign(user, userData);
-    user.role = role;
     
-    return await this.userRepository.save(user);
+    // Sauvegarder d'abord l'utilisateur sans relation
+    const savedUser = await this.userRepository.save(user);
+    
+    // Mettre à jour la relation avec le rôle
+    const userToUpdate = await this.userRepository.findOne({ where: { id_user: savedUser.id_user } });
+    if (userToUpdate) {
+      const userRoleRelation = this.userRepository
+        .createQueryBuilder()
+        .relation(User, 'role')
+        .of(userToUpdate);
+      
+      await userRoleRelation.set(role.id);
+    }
+    
+    return this.findOne(savedUser.id_user);
   }
 
   /**

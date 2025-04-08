@@ -80,15 +80,15 @@ export class CultivationSpace {
   })
   landId: string;
 
-  @OneToMany(() => CultivationBed, cultivationBed => cultivationBed.cultivationSpace)
+  @OneToMany(() => CultivationBed, cultivationBed => cultivationBed.cultivationSpace, { lazy: true })
   @ApiProperty({ 
     description: 'Planches de culture associées à cet espace. Permet de diviser l\'espace en zones plus précises pour les cultures.',
     type: () => [CultivationBed],
     isArray: true
   })
-  cultivationBeds: CultivationBed[];
+  cultivationBeds: Promise<CultivationBed[]>;
 
-  @ManyToMany(() => Crop, crop => crop.cultivationSpaces)
+  @ManyToMany(() => Crop, crop => crop.cultivationSpaces, { lazy: true })
   @JoinTable({
     name: 'is_cultivated',
     joinColumn: {
@@ -105,7 +105,7 @@ export class CultivationSpace {
     type: () => [Crop],
     isArray: true
   })
-  crops: Crop[];
+  crops: Promise<Crop[]>;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   @ApiProperty({ 

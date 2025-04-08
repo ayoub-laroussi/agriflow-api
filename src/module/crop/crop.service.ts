@@ -15,6 +15,7 @@ import { UpdateCropDto } from './dto/update-crop.dto';
 import { Crop } from './entities/crop.entity';
 import { CultivationSpace } from '../cultivation-space/entities/cultivation-space.entity';
 import { CultivationBed } from '../cultivation-bed/entities/cultivation-bed.entity';
+import { CropStatus } from '../crop-status/entities/crop-status.entity';
 
 /**
  * Service responsable de la gestion des cultures
@@ -31,6 +32,8 @@ export class CropService {
     private cultivationSpaceRepository: Repository<CultivationSpace>,
     @InjectRepository(CultivationBed)
     private cultivationBedRepository: Repository<CultivationBed>,
+    @InjectRepository(CropStatus)
+    private cropStatusRepository: Repository<CropStatus>,
   ) {}
 
   /**
@@ -50,19 +53,33 @@ export class CropService {
       statusId: createCropDto.statusId,
     });
 
+    // Sauvegarder d'abord la culture sans relations
+    const savedCrop = await this.cropRepository.save(crop);
+
     // Gestion des relations avec les espaces de culture
     if (createCropDto.cultivationSpaceIds?.length) {
       const spaces = await this.cultivationSpaceRepository.findByIds(createCropDto.cultivationSpaceIds);
-      crop.cultivationSpaces = spaces;
+      const cropToUpdate = await this.cropRepository.findOne({ where: { id: savedCrop.id } });
+      
+      if (cropToUpdate) {
+        cropToUpdate.cultivationSpaces = Promise.resolve(spaces);
+        await this.cropRepository.save(cropToUpdate);
+      }
     }
 
     // Gestion des relations avec les planches de culture
     if (createCropDto.cultivationBedIds?.length) {
       const beds = await this.cultivationBedRepository.findByIds(createCropDto.cultivationBedIds);
-      crop.cultivationBeds = beds;
+      const cropToUpdate = await this.cropRepository.findOne({ where: { id: savedCrop.id } });
+      
+      if (cropToUpdate) {
+        cropToUpdate.cultivationBeds = Promise.resolve(beds);
+        await this.cropRepository.save(cropToUpdate);
+      }
     }
 
-    return await this.cropRepository.save(crop);
+    // Récupérer la culture complète avec ses relations
+    return this.findOne(savedCrop.id);
   }
 
   /**
@@ -71,9 +88,28 @@ export class CropService {
    * @returns {Promise<Crop[]>} Liste de toutes les cultures
    */
   async findAll(): Promise<Crop[]> {
-    return await this.cropRepository.find({
-      relations: ['cultivationSpaces', 'cultivationBeds'],
+    const crops = await this.cropRepository.find({
+      relations: {
+        status: true
+      }
     });
+
+    // Charger manuellement les relations lazy pour chaque culture
+    for (const crop of crops) {
+      crop.cultivationSpaces = this.cropRepository
+        .createQueryBuilder('crop')
+        .relation(Crop, 'cultivationSpaces')
+        .of(crop)
+        .loadMany();
+      
+      crop.cultivationBeds = this.cropRepository
+        .createQueryBuilder('crop')
+        .relation(Crop, 'cultivationBeds')
+        .of(crop)
+        .loadMany();
+    }
+
+    return crops;
   }
 
   /**
@@ -86,11 +122,18 @@ export class CropService {
   async findOne(id: string): Promise<Crop> {
     const crop = await this.cropRepository.findOne({
       where: { id },
-      relations: ['cultivationSpaces', 'cultivationBeds'],
+      relations: {
+        status: true
+      }
     });
+    
     if (!crop) {
       throw new NotFoundException(`Culture avec l'ID ${id} non trouvé`);
     }
+
+    // Pas besoin de charger manuellement les relations lazy,
+    // elles seront chargées à la demande
+
     return crop;
   }
 
@@ -106,26 +149,39 @@ export class CropService {
     const crop = await this.findOne(id);
 
     // Mise à jour des propriétés de base
-    if (updateCropDto.name) crop.name = updateCropDto.name;
-    if (updateCropDto.commentary) crop.commentary = updateCropDto.commentary;
-    if (updateCropDto.plantFamily) crop.plantFamily = updateCropDto.plantFamily;
-    if (updateCropDto.variety) crop.variety = updateCropDto.variety;
-    if (updateCropDto.plantDate) crop.plantDate = updateCropDto.plantDate;
-    if (updateCropDto.statusId) crop.statusId = updateCropDto.statusId;
+    if (updateCropDto.name !== undefined) crop.name = updateCropDto.name;
+    if (updateCropDto.commentary !== undefined) crop.commentary = updateCropDto.commentary;
+    if (updateCropDto.plantFamily !== undefined) crop.plantFamily = updateCropDto.plantFamily;
+    if (updateCropDto.variety !== undefined) crop.variety = updateCropDto.variety;
+    if (updateCropDto.plantDate !== undefined) crop.plantDate = updateCropDto.plantDate;
+    if (updateCropDto.statusId !== undefined) crop.statusId = updateCropDto.statusId;
+
+    // Sauvegarder les changements de base
+    await this.cropRepository.save(crop);
 
     // Mise à jour des relations avec les espaces de culture
-    if (updateCropDto.cultivationSpaceIds) {
+    if (updateCropDto.cultivationSpaceIds !== undefined) {
       const spaces = await this.cultivationSpaceRepository.findByIds(updateCropDto.cultivationSpaceIds);
-      crop.cultivationSpaces = spaces;
+      const cropRelation = this.cropRepository
+        .createQueryBuilder()
+        .relation(Crop, 'cultivationSpaces')
+        .of(crop);
+      
+      await cropRelation.addAndRemove(spaces, await crop.cultivationSpaces);
     }
 
     // Mise à jour des relations avec les planches de culture
-    if (updateCropDto.cultivationBedIds) {
+    if (updateCropDto.cultivationBedIds !== undefined) {
       const beds = await this.cultivationBedRepository.findByIds(updateCropDto.cultivationBedIds);
-      crop.cultivationBeds = beds;
+      const cropRelation = this.cropRepository
+        .createQueryBuilder()
+        .relation(Crop, 'cultivationBeds')
+        .of(crop);
+      
+      await cropRelation.addAndRemove(beds, await crop.cultivationBeds);
     }
 
-    return await this.cropRepository.save(crop);
+    return this.findOne(id);
   }
 
   /**

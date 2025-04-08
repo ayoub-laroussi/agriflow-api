@@ -37,18 +37,25 @@ export class Land {
   @ApiProperty({ description: 'Coordonnées du terrain', required: false })
   land_coordinate?: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, user => user.lands, { lazy: true })
   @JoinColumn({ name: 'id_user' })
-  @ApiProperty({ description: 'Utilisateur propriétaire du terrain' })
-  user: User;
+  @ApiProperty({ 
+    description: 'Utilisateur propriétaire du terrain',
+    type: () => User
+  })
+  user: Promise<User>;
 
   @Column({ type: 'uuid' })
   @ApiProperty({ description: 'ID de l\'utilisateur propriétaire' })
   id_user: string;
 
-  @OneToMany(() => CultivationSpace, cultivationSpace => cultivationSpace.land)
-  @ApiProperty({ description: 'Espaces de culture du terrain' })
-  cultivationSpaces: CultivationSpace[];
+  @OneToMany(() => CultivationSpace, cultivationSpace => cultivationSpace.land, { lazy: true })
+  @ApiProperty({ 
+    description: 'Espaces de culture du terrain',
+    type: () => [CultivationSpace],
+    isArray: true
+  })
+  cultivationSpaces: Promise<CultivationSpace[]>;
 
   @CreateDateColumn({ type: 'timestamp' })
   @ApiProperty({ description: 'Date de création du terrain' })

@@ -140,9 +140,12 @@ export class CultivationBed {
   @ApiProperty({ 
     description: 'Espace de culture parent auquel appartient cette planche'
   })
-  @ManyToOne(() => CultivationSpace, cultivationSpace => cultivationSpace.cultivationBeds, { onDelete: 'CASCADE' })
+  @ManyToOne(() => CultivationSpace, cultivationSpace => cultivationSpace.cultivationBeds, { 
+    onDelete: 'CASCADE',
+    lazy: true 
+  })
   @JoinColumn({ name: 'cultivation_space_id' })
-  cultivationSpace: CultivationSpace;
+  cultivationSpace: Promise<CultivationSpace>;
 
   @ApiProperty({ 
     description: 'Identifiant UUID de l\'espace de culture parent',
@@ -156,7 +159,7 @@ export class CultivationBed {
     description: 'Cultures associées à la planche de culture',
     isArray: true
   })
-  @ManyToMany(() => Crop)
+  @ManyToMany(() => Crop, crop => crop.cultivationBeds, { lazy: true })
   @JoinTable({
     name: 'cultivation_bed_crops',
     joinColumn: {
@@ -168,7 +171,7 @@ export class CultivationBed {
       referencedColumnName: 'id',
     },
   })
-  crops: Crop[];
+  crops: Promise<Crop[]>;
 
   @ApiProperty({ 
     description: 'Date de création de l\'enregistrement',
