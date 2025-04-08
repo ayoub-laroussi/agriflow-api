@@ -10,8 +10,8 @@ Le back-end répond déjà à plusieurs des besoins mentionnés, mais il manque 
 ## Éléments manquants à implémenter :
 
 1. **Module de planches de culture** (RG15-RG21) :
-   - [ ] Créer une entité `CultivationBed` avec relations vers `CultivationSpace` et `Crop`
-   - [ ] Développer un CRUD complet pour les planches
+   - [x] Créer une entité `CultivationBed` avec relations vers `CultivationSpace` et `Crop`
+   - [x] Développer un CRUD complet pour les planches
 
 2. **Module d'actions agricoles** (RG31-RG41) :
    - [x] Créer une entité `AgriculturalAction` avec type, date, commentaire
@@ -40,7 +40,7 @@ Le back-end répond déjà à plusieurs des besoins mentionnés, mais il manque 
 
 ## Prochaines étapes recommandées :
 
-1. [ ] Commencer par le module de planches de culture qui est un composant central manquant
+1. [x] Commencer par le module de planches de culture qui est un composant central manquant
 2. [x] Implémenter le module d'actions agricoles qui représente le cœur fonctionnel
 3. [ ] Ajouter les statuts supplémentaires aux cultures
 4. [ ] Développer le module d'observations et météo
