@@ -8,7 +8,7 @@
  * @module CreateCropDto
  */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsDate, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
+import { IsString, IsDate, IsNotEmpty, IsOptional, MaxLength, IsUUID, IsArray } from 'class-validator';
 
 /**
  * Classe définissant les données requises pour créer une culture
@@ -17,41 +17,59 @@ import { IsString, IsDate, IsNotEmpty, IsOptional, MaxLength } from 'class-valid
  * avec des validations appropriées pour chaque champ.
  */
 export class CreateCropDto {
-  @ApiProperty({ description: 'Commentaire sur la culture', required: false })
-  @IsString()
-  @IsOptional()
-  crop_commentary?: string;
-
   @ApiProperty({ description: 'Nom de la culture' })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(50)
-  crop_name: string;
+  @MaxLength(100)
+  name: string;
 
-  @ApiProperty({ description: 'Famille de la plante', required: false })
+  @ApiProperty({ description: 'Commentaire sur la culture', required: false })
   @IsString()
   @IsOptional()
-  @MaxLength(50)
-  crop_plant_family?: string;
+  commentary?: string;
 
-  @ApiProperty({ description: 'Variété de la culture', required: false })
+  @ApiProperty({ description: 'Famille de la plante' })
   @IsString()
-  @IsOptional()
-  @MaxLength(50)
-  crop_variety?: string;
+  @IsNotEmpty()
+  @MaxLength(100)
+  plantFamily: string;
+
+  @ApiProperty({ description: 'Variété de la plante' })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  variety: string;
 
   @ApiProperty({ description: 'Date de plantation' })
   @IsDate()
   @IsNotEmpty()
-  crop_planting_date: Date;
+  plantDate: Date;
 
-  @ApiProperty({ description: 'Date de récolte', required: false })
-  @IsDate()
-  @IsOptional()
-  crop_harvest_date?: Date;
+  @ApiProperty({ 
+    description: 'Identifiant du statut de la culture',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @IsUUID('4')
+  @IsNotEmpty()
+  statusId: string;
 
-  @ApiProperty({ description: 'Statut de la culture', required: false })
-  @IsString()
+  @ApiProperty({ 
+    description: 'Identifiants des espaces de culture associés',
+    type: [String],
+    required: false
+  })
+  @IsArray()
+  @IsUUID('4', { each: true })
   @IsOptional()
-  crop_status?: string;
+  cultivationSpaceIds?: string[];
+
+  @ApiProperty({ 
+    description: 'Identifiants des planches de culture associées',
+    type: [String],
+    required: false
+  })
+  @IsArray()
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  cultivationBedIds?: string[];
 }

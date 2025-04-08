@@ -7,11 +7,16 @@
  * 
  * @module CropModule
  */
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CropService } from './crop.service';
 import { CropController } from './crop.controller';
 import { Crop } from './entities/crop.entity';
+import { CultivationSpace } from '../cultivation-space/entities/cultivation-space.entity';
+import { CultivationBed } from '../cultivation-bed/entities/cultivation-bed.entity';
+import { CropStatus } from '../crop-status/entities/crop-status.entity';
+import { CropStatusService } from '../crop-status/crop-status.service';
+import { CropStatusController } from '../crop-status/crop-status.controller';
 
 /**
  * Module de gestion des cultures
@@ -20,8 +25,18 @@ import { Crop } from './entities/crop.entity';
  * Importe le module TypeORM pour l'accès aux données et configure les contrôleurs et services.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Crop])],
-  controllers: [CropController],
-  providers: [CropService],
+  imports: [
+    TypeOrmModule.forFeature([Crop, CultivationSpace, CultivationBed, CropStatus])
+  ],
+  controllers: [CropController, CropStatusController],
+  providers: [CropService, CropStatusService],
+  exports: [CropService, CropStatusService]
 })
-export class CropModule {}
+export class CropModule implements OnModuleInit {
+  constructor(private cropStatusService: CropStatusService) {}
+
+  async onModuleInit() {
+    // Initialiser les statuts prédéfinis au démarrage du module
+    await this.cropStatusService.initializePredefinedStatuses();
+  }
+}

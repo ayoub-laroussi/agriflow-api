@@ -8,23 +8,11 @@
  * 
  * @module Crop
  */
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn, JoinTable, ManyToOne, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { CultivationSpace } from '../../cultivation-space/entities/cultivation-space.entity';
 import { CultivationBed } from '../../cultivation-bed/entities/cultivation-bed.entity';
-
-/**
- * Énumération des statuts possibles pour une culture
- */
-export enum CropStatus {
-  INUTILISABLE = 'inutilisable',
-  EN_JACHERE = 'en jachère',
-  EN_PREPARATION = 'en préparation',
-  EN_CULTURE = 'en culture',
-  RECOLTE = 'récolte',
-  ABANDONNE = 'abandonné',
-  DETRUIT = 'détruit'
-}
+import { CropStatus } from '../../crop-status/entities/crop-status.entity';
 
 /**
  * Entité Culture
@@ -58,26 +46,48 @@ export class Crop {
   @Column({ name: 'plant_date', type: 'date' })
   plantDate: Date;
 
-  @ApiProperty({ 
-    description: 'Statut de la culture',
-    enum: CropStatus,
-    example: CropStatus.EN_CULTURE
-  })
-  @Column({ 
-    name: 'status', 
-    length: 20, 
-    type: 'varchar',
-    enum: CropStatus,
-    default: CropStatus.EN_PREPARATION
-  })
+  @ApiProperty({ description: 'Statut de la culture' })
+  @ManyToOne(() => CropStatus, { nullable: false })
+  @JoinColumn({ name: 'status_id' })
   status: CropStatus;
 
+  @Column({ name: 'status_id', type: 'uuid' })
+  statusId: string;
+
   @ApiProperty({ description: 'Espaces de culture associés' })
-  @ManyToMany(() => CultivationSpace, cultivationSpace => cultivationSpace.crops)
+  @ManyToMany(() => CultivationSpace, cultivationSpace => cultivationSpace.crops, {
+    onDelete: 'CASCADE',
+    cascade: true
+  })
+  @JoinTable({
+    name: 'is_cultivated',
+    joinColumn: {
+      name: 'crop_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'cultivation_space_id',
+      referencedColumnName: 'id',
+    },
+  })
   cultivationSpaces: CultivationSpace[];
 
   @ApiProperty({ description: 'Planches de culture associées' })
-  @ManyToMany(() => CultivationBed, cultivationBed => cultivationBed.crops)
+  @ManyToMany(() => CultivationBed, cultivationBed => cultivationBed.crops, {
+    onDelete: 'CASCADE',
+    cascade: true
+  })
+  @JoinTable({
+    name: 'cultivation_bed_crops',
+    joinColumn: {
+      name: 'crop_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'cultivation_bed_id',
+      referencedColumnName: 'id',
+    },
+  })
   cultivationBeds: CultivationBed[];
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
