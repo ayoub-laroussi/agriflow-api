@@ -59,6 +59,56 @@ export class CropStatusService {
         displayOrder: 4,
         isPredefined: true,
       },
+      // Nouveaux statuts ajoutés selon la roadmap
+      {
+        name: 'Inutilisable',
+        description: 'Culture devenue inutilisable suite à un problème',
+        color: '#9C27B0',
+        displayOrder: 5,
+        isPredefined: true,
+      },
+      {
+        name: 'En jachère',
+        description: 'Zone de culture mise en jachère pour régénération du sol',
+        color: '#8BC34A',
+        displayOrder: 6,
+        isPredefined: true,
+      },
+      {
+        name: 'En préparation',
+        description: 'Culture en phase de préparation avant plantation',
+        color: '#009688',
+        displayOrder: 7,
+        isPredefined: true,
+      },
+      {
+        name: 'En floraison',
+        description: 'Culture au stade de floraison',
+        color: '#E91E63',
+        displayOrder: 8,
+        isPredefined: true,
+      },
+      {
+        name: 'En germination',
+        description: 'Culture au stade de germination',
+        color: '#00BCD4',
+        displayOrder: 9,
+        isPredefined: true,
+      },
+      {
+        name: 'Maladie',
+        description: 'Culture affectée par une maladie',
+        color: '#FF5722',
+        displayOrder: 10,
+        isPredefined: true,
+      },
+      {
+        name: 'Nuisibles',
+        description: 'Culture affectée par des nuisibles',
+        color: '#FF9800',
+        displayOrder: 11,
+        isPredefined: true,
+      },
     ];
 
     for (const status of predefinedStatuses) {

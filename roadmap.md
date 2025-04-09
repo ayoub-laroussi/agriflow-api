@@ -19,20 +19,20 @@ Le back-end répond déjà à plusieurs des besoins mentionnés, mais il manque 
    - [x] Implémenter un calendrier d'actions
 
 3. **Module d'observations et météo** (RG42-RG46) :
-   - [ ] Créer une entité `Observation` avec date, description et données météorologiques
-   - [ ] Lier aux espaces de culture
+   - [x] Créer une entité `Observation` avec date, description et données météorologiques
+   - [x] Lier aux espaces de culture
 
 4. **Améliorations du module Culture** :
-   - [ ] Ajouter tous les statuts manquants : `inutilisable`, `en jachère`, `en préparation`, etc.
-   - [ ] Renforcer la relation avec les espaces et planches de culture
+   - [x] Ajouter tous les statuts manquants : `inutilisable`, `en jachère`, `en préparation`, etc.
+   - [x] Renforcer la relation avec les espaces et planches de culture
 
 5. **Notifications et rappels** (RG51-RG53) :
-   - [ ] Développer un système de notifications
-   - [ ] Implémenter la configuration des préférences utilisateur
-   - [ ] Créer un mécanisme de rappels automatiques
+   - [x] Développer un système de notifications
+   - [x] Implémenter la configuration des préférences utilisateur
+   - [x] Créer un mécanisme de rappels automatiques
 
 6. **Relations de suppression en cascade** (RG6, RG13, RG20, RG29) :
-   - [ ] Vérifier que les suppressions en cascade sont correctement configurées
+   - [x] Vérifier que les suppressions en cascade sont correctement configurées
 
 7. **Gestion des permissions avancées** (RG48-RG50) :
    - [ ] Développer un système d'invitation pour le partage de terrains
@@ -42,9 +42,10 @@ Le back-end répond déjà à plusieurs des besoins mentionnés, mais il manque 
 
 1. [x] Commencer par le module de planches de culture qui est un composant central manquant
 2. [x] Implémenter le module d'actions agricoles qui représente le cœur fonctionnel
-3. [ ] Ajouter les statuts supplémentaires aux cultures
-4. [ ] Développer le module d'observations et météo
-5. [ ] Mettre en place le système de notifications
-6. [ ] Renforcer les relations et les règles de suppression
+3. [x] Ajouter les statuts supplémentaires aux cultures
+4. [x] Développer le module d'observations et météo
+5. [x] Mettre en place le système de notifications
+6. [x] Renforcer les relations et les règles de suppression
+7. [ ] Développer le système d'invitation et de permissions avancées
 
 Ces développements permettront de couvrir l'ensemble des règles de gestion définies dans le cahier des charges.

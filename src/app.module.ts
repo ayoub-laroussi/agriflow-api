@@ -9,6 +9,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { UserModule } from './module/user/user.module';
 import { RoleModule } from './module/role/role.module';
 import { LandModule } from './module/land/land.module';
@@ -18,6 +19,8 @@ import { CropModule } from './module/crop/crop.module';
 import { typeOrmConfig } from './config/typeorm.config';
 import { CultivationBedModule } from './module/cultivation-bed/cultivation-bed.module';
 import { AgriculturalActionModule } from './agricultural-action/agricultural-action.module';
+import { ObservationModule } from './module/observation/observation.module';
+import { NotificationModule } from './module/notification/notification.module';
 
 /**
  * Module racine de l'application
@@ -29,6 +32,7 @@ import { AgriculturalActionModule } from './agricultural-action/agricultural-act
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(typeOrmConfig),
+    ScheduleModule.forRoot(),
     UserModule,
     RoleModule,
     LandModule,
@@ -37,6 +41,8 @@ import { AgriculturalActionModule } from './agricultural-action/agricultural-act
     CropModule,
     CultivationBedModule,
     AgriculturalActionModule,
+    ObservationModule,
+    NotificationModule,
   ],
 })
 export class AppModule {}
