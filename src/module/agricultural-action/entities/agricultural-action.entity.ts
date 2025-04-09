@@ -10,9 +10,9 @@
  */
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { CultivationSpace } from '../../module/cultivation-space/entities/cultivation-space.entity';
-import { CultivationBed } from '../../module/cultivation-bed/entities/cultivation-bed.entity';
-import { Crop } from '../../module/crop/entities/crop.entity';
+import { CultivationSpace } from '../../cultivation-space/entities/cultivation-space.entity';
+import { CultivationBed } from '../../cultivation-bed/entities/cultivation-bed.entity';
+import { Crop } from '../../crop/entities/crop.entity';
 
 /**
  * Énumération des types d'actions agricoles possibles

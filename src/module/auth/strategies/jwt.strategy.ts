@@ -46,7 +46,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @throws UnauthorizedException si l'utilisateur n'est pas trouvé
    */
   async validate(payload: JwtPayload) {
-    const user = await this.userService.findOneByEmail(payload.email);
+    const user = await this.userService.findByEmail(payload.email);
     
     if (!user) {
       throw new UnauthorizedException('Utilisateur non trouvé');

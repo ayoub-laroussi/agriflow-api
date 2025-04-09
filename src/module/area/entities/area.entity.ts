@@ -44,4 +44,4 @@ export class Area {
   @UpdateDateColumn({ type: 'timestamp' })
   @ApiProperty({ description: 'Date de dernière mise à jour de la zone' })
   updated_at: Date;
-} 
+}

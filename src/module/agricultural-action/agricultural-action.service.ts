@@ -13,9 +13,9 @@ import { Repository, Between } from 'typeorm';
 import { CreateAgriculturalActionDto } from './dto/create-agricultural-action.dto';
 import { UpdateAgriculturalActionDto } from './dto/update-agricultural-action.dto';
 import { AgriculturalAction, AgriculturalActionType } from './entities/agricultural-action.entity';
-import { CultivationSpace } from '../module/cultivation-space/entities/cultivation-space.entity';
-import { CultivationBed } from '../module/cultivation-bed/entities/cultivation-bed.entity';
-import { Crop } from '../module/crop/entities/crop.entity';
+import { CultivationSpace } from '../cultivation-space/entities/cultivation-space.entity';
+import { CultivationBed } from '../cultivation-bed/entities/cultivation-bed.entity';
+import { Crop } from '../crop/entities/crop.entity';
 
 /**
  * Service de gestion des actions agricoles

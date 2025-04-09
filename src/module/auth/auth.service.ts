@@ -66,7 +66,7 @@ export class AuthService {
    * @returns L'utilisateur si les identifiants sont valides, null sinon
    */
   private async validateUser(email: string, password: string) {
-    const user = await this.userService.findOneByEmail(email);
+    const user = await this.userService.findByEmail(email);
     
     if (!user) {
       return null;

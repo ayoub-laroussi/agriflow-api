@@ -8,6 +8,9 @@
  */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AreaService } from './area.service';
+import { AreaController } from './area.controller';
+import { Area } from './entities/area.entity';
 
 /**
  * Module de gestion des zones
@@ -16,8 +19,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
  * Importe le module TypeORM pour l'accès aux données.
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([])],
-  controllers: [],
-  providers: [],
+  imports: [TypeOrmModule.forFeature([Area])],
+  controllers: [AreaController],
+  providers: [AreaService],
+  exports: [AreaService],
 })
-export class AreaModule {} 
+export class AreaModule {}

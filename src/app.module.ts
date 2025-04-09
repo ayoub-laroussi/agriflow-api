@@ -25,7 +25,7 @@ import { SeedModule } from './module/seed/seed.module';
 import { UsersModule } from './module/users/users.module';
 import { AuthModule } from './module/auth/auth.module';
 import { AreaModule } from './module/area/area.module';
-import { CalendarModule } from './module/calendar/calendar.module';
+
 
 /**
  * Module principal de l'application
@@ -80,7 +80,6 @@ import { CalendarModule } from './module/calendar/calendar.module';
     ObservationModule,
     NotificationModule,
     AgriculturalActionModule,
-    CalendarModule,
   ],
 })
 export class AppModule {}

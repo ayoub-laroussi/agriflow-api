@@ -48,7 +48,7 @@ describe('AuthService', () => {
         {
           provide: UserService,
           useValue: {
-            findOneByEmail: vi.fn(),
+            findByEmail: vi.fn(),
           },
         },
         {
@@ -72,14 +72,14 @@ describe('AuthService', () => {
   describe('login', () => {
     it('devrait retourner un token JWT si les identifiants sont valides', async () => {
       // Arrange
-      vi.spyOn(userService, 'findOneByEmail').mockResolvedValue(mockUser as any);
+      vi.spyOn(userService, 'findByEmail').mockResolvedValue(mockUser as any);
       vi.mocked(bcrypt.compare).mockResolvedValue(true as never);
 
       // Act
       const result = await authService.login(mockLoginDto);
 
       // Assert
-      expect(userService.findOneByEmail).toHaveBeenCalledWith(mockLoginDto.email);
+      expect(userService.findByEmail).toHaveBeenCalledWith(mockLoginDto.email);
       expect(bcrypt.compare).toHaveBeenCalledWith(mockLoginDto.password, mockUser.password);
       expect(jwtService.sign).toHaveBeenCalledWith({
         sub: mockUser.id_user,
@@ -101,21 +101,21 @@ describe('AuthService', () => {
 
     it('devrait lancer une exception si l\'utilisateur n\'existe pas', async () => {
       // Arrange
-      vi.spyOn(userService, 'findOneByEmail').mockResolvedValue(null);
+      vi.spyOn(userService, 'findByEmail').mockResolvedValue(null);
 
       // Act & Assert
       await expect(authService.login(mockLoginDto)).rejects.toThrow(UnauthorizedException);
-      expect(userService.findOneByEmail).toHaveBeenCalledWith(mockLoginDto.email);
+      expect(userService.findByEmail).toHaveBeenCalledWith(mockLoginDto.email);
     });
 
     it('devrait lancer une exception si le mot de passe est invalide', async () => {
       // Arrange
-      vi.spyOn(userService, 'findOneByEmail').mockResolvedValue(mockUser as any);
+      vi.spyOn(userService, 'findByEmail').mockResolvedValue(mockUser as any);
       vi.mocked(bcrypt.compare).mockResolvedValue(false as never);
 
       // Act & Assert
       await expect(authService.login(mockLoginDto)).rejects.toThrow(UnauthorizedException);
-      expect(userService.findOneByEmail).toHaveBeenCalledWith(mockLoginDto.email);
+      expect(userService.findByEmail).toHaveBeenCalledWith(mockLoginDto.email);
       expect(bcrypt.compare).toHaveBeenCalledWith(mockLoginDto.password, mockUser.password);
     });
   });

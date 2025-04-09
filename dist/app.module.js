@@ -11,19 +11,20 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
 const schedule_1 = require("@nestjs/schedule");
+const user_module_1 = require("./module/user/user.module");
+const role_module_1 = require("./module/role/role.module");
 const land_module_1 = require("./module/land/land.module");
 const soilcover_module_1 = require("./module/soilcover/soilcover.module");
 const cultivation_space_module_1 = require("./module/cultivation-space/cultivation-space.module");
 const crop_module_1 = require("./module/crop/crop.module");
 const cultivation_bed_module_1 = require("./module/cultivation-bed/cultivation-bed.module");
-const agricultural_action_module_1 = require("./agricultural-action/agricultural-action.module");
+const agricultural_action_module_1 = require("./module/agricultural-action/agricultural-action.module");
 const observation_module_1 = require("./module/observation/observation.module");
 const notification_module_1 = require("./module/notification/notification.module");
-const seed_module_1 = require("./seed/seed.module");
-const users_module_1 = require("./users/users.module");
-const auth_module_1 = require("./auth/auth.module");
+const seed_module_1 = require("./module/seed/seed.module");
+const users_module_1 = require("./module/users/users.module");
+const auth_module_1 = require("./module/auth/auth.module");
 const area_module_1 = require("./module/area/area.module");
-const calendar_module_1 = require("./module/calendar/calendar.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -51,6 +52,8 @@ exports.AppModule = AppModule = __decorate([
             schedule_1.ScheduleModule.forRoot(),
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
+            user_module_1.UserModule,
+            role_module_1.RoleModule,
             seed_module_1.SeedModule,
             cultivation_space_module_1.CultivationSpaceModule,
             crop_module_1.CropModule,
@@ -61,7 +64,6 @@ exports.AppModule = AppModule = __decorate([
             observation_module_1.ObservationModule,
             notification_module_1.NotificationModule,
             agricultural_action_module_1.AgriculturalActionModule,
-            calendar_module_1.CalendarModule,
         ],
     })
 ], AppModule);
