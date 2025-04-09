@@ -1,11 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { NotificationService } from './notification.service';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('NotificationService', () => {
   let service: NotificationService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       providers: [NotificationService],
     }).compile();
 
