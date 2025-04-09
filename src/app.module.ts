@@ -8,7 +8,7 @@
  */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { UserModule } from './module/user/user.module';
 import { RoleModule } from './module/role/role.module';
@@ -18,31 +18,69 @@ import { CultivationSpaceModule } from './module/cultivation-space/cultivation-s
 import { CropModule } from './module/crop/crop.module';
 import { typeOrmConfig } from './config/typeorm.config';
 import { CultivationBedModule } from './module/cultivation-bed/cultivation-bed.module';
-import { AgriculturalActionModule } from './agricultural-action/agricultural-action.module';
+import { AgriculturalActionModule } from './module/agricultural-action/agricultural-action.module';
 import { ObservationModule } from './module/observation/observation.module';
 import { NotificationModule } from './module/notification/notification.module';
+import { SeedModule } from './module/seed/seed.module';
+import { UsersModule } from './module/users/users.module';
+import { AuthModule } from './module/auth/auth.module';
+import { AreaModule } from './module/area/area.module';
+import { CalendarModule } from './module/calendar/calendar.module';
 
 /**
- * Module racine de l'application
+ * Module principal de l'application
  * 
- * Importe et configure tous les modules métier et techniques nécessaires au fonctionnement de l'application.
- * Initialise la connexion à la base de données via TypeORM et charge les variables d'environnement.
+ * Ce module configure l'ensemble de l'application, notamment :
+ * - La connexion à la base de données via TypeORM
+ * - Les variables d'environnement via ConfigModule
+ * - Les tâches planifiées via ScheduleModule
+ * - Les différents modules fonctionnels de l'application
+ * 
+ * @module AppModule
  */
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    TypeOrmModule.forRoot(typeOrmConfig),
+    // Configuration
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    
+    // Base de données
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST', 'localhost'),
+        port: configService.get<number>('DB_PORT', 5432),
+        username: configService.get('DB_USERNAME', 'postgres'),
+        password: configService.get('DB_PASSWORD', 'postgres'),
+        database: configService.get('DB_NAME', 'agriflow'),
+        entities: ['dist/**/*.entity{.ts,.js}'],
+        synchronize: configService.get('NODE_ENV') !== 'production',
+        logging: configService.get('NODE_ENV') === 'development',
+      }),
+    }),
+    
+    // Planification de tâches
     ScheduleModule.forRoot(),
+    
+    // Modules fonctionnels
+    AuthModule,
+    UsersModule,
     UserModule,
     RoleModule,
-    LandModule,
-    SoilCoverModule,
+    SeedModule,
     CultivationSpaceModule,
     CropModule,
+    AreaModule,
     CultivationBedModule,
-    AgriculturalActionModule,
+    LandModule,
+    SoilCoverModule,
     ObservationModule,
     NotificationModule,
+    AgriculturalActionModule,
+    CalendarModule,
   ],
 })
 export class AppModule {}
