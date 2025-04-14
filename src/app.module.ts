@@ -21,7 +21,7 @@ import { CultivationBedModule } from './module/cultivation-bed/cultivation-bed.m
 import { AgriculturalActionModule } from './module/agricultural-action/agricultural-action.module';
 import { ObservationModule } from './module/observation/observation.module';
 import { NotificationModule } from './module/notification/notification.module';
-import { SeedModule } from './module/seed/seed.module';
+// import { SeedModule } from './module/seed/seed.module';
 import { UsersModule } from './module/users/users.module';
 import { AuthModule } from './module/auth/auth.module';
 import { AreaModule } from './module/area/area.module';
@@ -70,7 +70,7 @@ import { AreaModule } from './module/area/area.module';
     UsersModule,
     UserModule,
     RoleModule,
-    SeedModule,
+    // SeedModule,
     CultivationSpaceModule,
     CropModule,
     AreaModule,
