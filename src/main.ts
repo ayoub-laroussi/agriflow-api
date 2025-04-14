@@ -28,8 +28,15 @@ async function bootstrap() {
     new FastifyAdapter()
   );
 
+  // Activation du CORS
+  app.enableCors();
+
   // Activation de la validation globale
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  }));
 
   // Configuration des assets statiques pour Swagger UI
   app.useStaticAssets({
@@ -42,6 +49,23 @@ async function bootstrap() {
     .setDescription(`
       API de gestion des exploitations agricoles permettant la gestion des terrains, 
       des espaces de culture, des planches de culture et des cultures.
+      
+      ## Authentification
+      
+      L'API utilise l'authentification JWT (JSON Web Token) pour sécuriser les endpoints.
+      Pour accéder aux endpoints protégés, vous devez d'abord vous authentifier via '/auth/login'
+      et utiliser le token reçu dans l'en-tête Authorization (Bearer Token).
+      
+      ## Format de réponse standard
+      
+      Toutes les réponses suivent un format standardisé:
+      \`\`\`json
+      {
+        "message": "Description du résultat",
+        "data": {...},
+        "statusCode": 200
+      }
+      \`\`\`
       
       ## Fonctionnalités principales
       
@@ -57,21 +81,49 @@ async function bootstrap() {
       
       ### Gestion des cultures
       Permet de suivre les différentes cultures, leurs périodes de plantation, leurs statuts et autres informations.
+      
+      ### Observations et actions agricoles
+      Permet d'enregistrer des observations météorologiques et des actions agricoles liées aux cultures.
+      
+      ### Système de notification
+      Gestion des notifications pour les alertes météo, les rappels de tâches et les événements liés aux cultures.
     `)
     .setVersion('1.0')
+    .addTag('auth', 'Authentification et gestion des tokens')
+    .addTag('users', 'Gestion des utilisateurs')
+    .addTag('roles', 'Gestion des rôles utilisateurs')
     .addTag('lands', 'Gestion des terrains')
     .addTag('cultivation-spaces', 'Gestion des espaces de culture')
     .addTag('cultivation-beds', 'Gestion des planches de culture')
     .addTag('crops', 'Gestion des cultures')
-    .addTag('roles', 'Gestion des rôles utilisateurs')
-    .addTag('users', 'Gestion des utilisateurs')
+    .addTag('crop-status', 'Gestion des statuts de culture')
+    .addTag('agricultural-actions', 'Gestion des actions agricoles')
+    .addTag('observations', 'Gestion des observations météorologiques')
+    .addTag('notifications', 'Gestion des notifications')
+    .addTag('notification-preferences', 'Gestion des préférences de notification')
     .addTag('soilcover', 'Gestion des couvertures de sol')
-    .addBearerAuth()
+    .addTag('area', 'Gestion des aires')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      description: 'Entrez votre token JWT',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+      docExpansion: 'none',
+    },
+  });
 
-  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
+  // Démarrage du serveur
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port, '0.0.0.0');
+  console.log(`Application démarrée sur: http://localhost:${port}/api`);
 }
 bootstrap();
