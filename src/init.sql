@@ -121,7 +121,7 @@ IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'agricultura
       (uuid_generate_v4(), 'fertilisation', '2024-03-27 14:00:00', 'Apport de purin d'ortie dilué à 10% sur les tomates', NOW(), NOW(), NULL, NULL, crop_id_1),
       (uuid_generate_v4(), 'taille', '2024-04-02 11:30:00', 'Suppression des gourmands sur les tomates', NOW(), NOW(), NULL, NULL, crop_id_1),
       (uuid_generate_v4(), 'traitement', '2024-04-03 17:00:00', 'Pulvérisation préventive de purin de prêle contre mildiou', NOW(), NOW(), cultivation_space_id_1, NULL, NULL),
-      (uuid_generate_v4(), 'arrosage', '2024-04-05 07:30:00', 'Arrosage général du potager, 10L/m²', NOW(), NOW(), cultivation_space_id_1, NULL, NULL),
+      (uuid_generate_v4(), 'arrosage', '2024-04-05 07:30:00', 'Arrosage général du potager, 10 L/m²', NOW(), NOW(), cultivation_space_id_1, NULL, NULL),
       (uuid_generate_v4(), 'traitement', '2024-04-08 16:00:00', 'Application de savon noir contre pucerons sur jeunes pousses', NOW(), NOW(), cultivation_space_id_3, NULL, NULL),
       (uuid_generate_v4(), 'autre', '2024-04-09 10:00:00', 'Installation des tuteurs pour tomates', NOW(), NOW(), NULL, cultivation_bed_id_1, NULL),
       
