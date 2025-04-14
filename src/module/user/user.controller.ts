@@ -13,6 +13,8 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { ApiResponseDto } from '../../swagger-responses';
+import { userExamples, errorExamples } from '../../swagger-responses';
 
 /**
  * Contrôleur de gestion des utilisateurs
@@ -32,7 +34,25 @@ export class UserController {
    */
   @Post()
   @ApiOperation({ summary: 'Créer un nouvel utilisateur' })
-  @ApiResponse({ status: 201, description: 'Utilisateur créé avec succès', type: User })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Utilisateur créé avec succès', 
+    type: ApiResponseDto,
+    content: {
+      'application/json': {
+        example: userExamples.create
+      }
+    }
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Données invalides',
+    content: {
+      'application/json': {
+        example: errorExamples.badRequest
+      }
+    }
+  })
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
@@ -43,7 +63,16 @@ export class UserController {
    */
   @Get()
   @ApiOperation({ summary: 'Récupérer tous les utilisateurs' })
-  @ApiResponse({ status: 200, description: 'Liste des utilisateurs', type: [User] })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Liste des utilisateurs', 
+    type: ApiResponseDto,
+    content: {
+      'application/json': {
+        example: userExamples.getAll
+      }
+    }
+  })
   findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
@@ -55,7 +84,25 @@ export class UserController {
    */
   @Get(':id')
   @ApiOperation({ summary: 'Récupérer un utilisateur par son ID' })
-  @ApiResponse({ status: 200, description: 'Utilisateur trouvé', type: User })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Utilisateur trouvé', 
+    type: ApiResponseDto,
+    content: {
+      'application/json': {
+        example: userExamples.getOne
+      }
+    }
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Utilisateur non trouvé',
+    content: {
+      'application/json': {
+        example: userExamples.notFound
+      }
+    }
+  })
   findOne(@Param('id') id: string): Promise<User> {
     return this.userService.findOne(id);
   }
@@ -68,7 +115,34 @@ export class UserController {
    */
   @Patch(':id')
   @ApiOperation({ summary: 'Mettre à jour un utilisateur' })
-  @ApiResponse({ status: 200, description: 'Utilisateur mis à jour avec succès', type: User })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Utilisateur mis à jour avec succès', 
+    type: ApiResponseDto,
+    content: {
+      'application/json': {
+        example: userExamples.update
+      }
+    }
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Utilisateur non trouvé',
+    content: {
+      'application/json': {
+        example: userExamples.notFound
+      }
+    }
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Données invalides',
+    content: {
+      'application/json': {
+        example: errorExamples.badRequest
+      }
+    }
+  })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     return this.userService.update(id, updateUserDto);
   }
@@ -80,7 +154,24 @@ export class UserController {
    */
   @Delete(':id')
   @ApiOperation({ summary: 'Supprimer un utilisateur' })
-  @ApiResponse({ status: 200, description: 'Utilisateur supprimé avec succès' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Utilisateur supprimé avec succès',
+    content: {
+      'application/json': {
+        example: userExamples.delete
+      }
+    }
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Utilisateur non trouvé',
+    content: {
+      'application/json': {
+        example: userExamples.notFound
+      }
+    }
+  })
   remove(@Param('id') id: string): Promise<void> {
     return this.userService.remove(id);
   }
@@ -92,7 +183,25 @@ export class UserController {
    */
   @Get('email/:email')
   @ApiOperation({ summary: 'Récupérer un utilisateur par son email' })
-  @ApiResponse({ status: 200, description: 'Utilisateur trouvé', type: User })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Utilisateur trouvé', 
+    type: ApiResponseDto,
+    content: {
+      'application/json': {
+        example: userExamples.getOne
+      }
+    }
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Utilisateur non trouvé',
+    content: {
+      'application/json': {
+        example: userExamples.notFound
+      }
+    }
+  })
   findByEmail(@Param('email') email: string): Promise<User> {
     return this.userService.findByEmail(email);
   }
@@ -104,7 +213,25 @@ export class UserController {
    */
   @Get('username/:username')
   @ApiOperation({ summary: 'Récupérer un utilisateur par son nom d\'utilisateur' })
-  @ApiResponse({ status: 200, description: 'Utilisateur trouvé', type: User })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Utilisateur trouvé', 
+    type: ApiResponseDto,
+    content: {
+      'application/json': {
+        example: userExamples.getOne
+      }
+    }
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Utilisateur non trouvé',
+    content: {
+      'application/json': {
+        example: userExamples.notFound
+      }
+    }
+  })
   findByUsername(@Param('username') username: string): Promise<User> {
     return this.userService.findByUsername(username);
   }
