@@ -36,31 +36,31 @@ export class NotificationPreference {
   id: number;
 
   @ApiProperty({ description: 'ID de l\'utilisateur associé' })
-  @Column()
+  @Column({ type: 'int' })
   userId: number;
 
   @ApiProperty({ description: 'Indique si les notifications sont globalement activées' })
-  @Column({ default: true })
+  @Column({ default: true, type: 'boolean' })
   emailEnabled: boolean;
 
   @ApiProperty({ description: 'Indique si les notifications push sont activées' })
-  @Column({ default: true })
+  @Column({ default: true, type: 'boolean' })
   pushEnabled: boolean;
 
   @ApiProperty({ description: 'Indique si les notifications SMS sont activées' })
-  @Column({ default: true })
+  @Column({ default: true, type: 'boolean' })
   smsEnabled: boolean;
 
   @ApiProperty({ description: 'Indique si les alertes de croissance sont activées' })
-  @Column({ default: true })
+  @Column({ default: true, type: 'boolean' })
   cropAlertsEnabled: boolean;
 
   @ApiProperty({ description: 'Indique si les alertes météorologiques sont activées' })
-  @Column({ default: true })
+  @Column({ default: true, type: 'boolean' })
   weatherAlertsEnabled: boolean;
 
   @ApiProperty({ description: 'Indique si les rappels de tâche sont activés' })
-  @Column({ default: true })
+  @Column({ default: true, type: 'boolean' })
   taskRemindersEnabled: boolean;
 
   @ApiProperty({ description: 'Types de notifications activés' })

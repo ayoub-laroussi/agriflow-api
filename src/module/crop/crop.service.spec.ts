@@ -7,29 +7,64 @@ import { Crop } from './entities/crop.entity';
 import { NotFoundException } from '@nestjs/common';
 import { CreateCropDto } from './dto/create-crop.dto';
 import { UpdateCropDto } from './dto/update-crop.dto';
+import { CultivationSpace } from '../cultivation-space/entities/cultivation-space.entity';
+import { CultivationBed } from '../cultivation-bed/entities/cultivation-bed.entity';
+import { CropStatus } from '../crop-status/entities/crop-status.entity';
 
 describe('CropService', () => {
   let service: CropService;
-  let repository: Repository<Crop>;
+  let cropRepository: Repository<Crop>;
+  let cultivationSpaceRepository: Repository<CultivationSpace>;
+  let cultivationBedRepository: Repository<CultivationBed>;
+  let cropStatusRepository: Repository<CropStatus>;
 
-  const mockRepository = {
+  const mockCropRepository = {
     create: vi.fn(),
     save: vi.fn(),
     find: vi.fn(),
     findOne: vi.fn(),
+    findByIds: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
+    remove: vi.fn(),
+    createQueryBuilder: vi.fn(() => ({
+      relation: vi.fn(() => ({
+        of: vi.fn(() => ({
+          loadMany: vi.fn(),
+          addAndRemove: vi.fn(),
+        })),
+      })),
+    })),
   };
 
-  const mockCrop: Crop = {
+  const mockCultivationSpaceRepository = {
+    findByIds: vi.fn(),
+  };
+
+  const mockCultivationBedRepository = {
+    findByIds: vi.fn(),
+  };
+
+  const mockCropStatusRepository = {
+    findOne: vi.fn(),
+  };
+
+  const mockCropStatus = {
+    id: '1',
+    name: 'En cours',
+  };
+
+  const mockCrop = {
     id: '123',
     name: 'Tomate',
     commentary: 'Commentaire test',
     plantFamily: 'Solanacées',
     variety: 'Tomate cerise',
     plantDate: new Date(),
-    status: 'En cours',
-    cultivationSpaces: [],
+    statusId: '1',
+    status: mockCropStatus,
+    cultivationSpaces: Promise.resolve([]),
+    cultivationBeds: Promise.resolve([]),
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -40,13 +75,28 @@ describe('CropService', () => {
         CropService,
         {
           provide: getRepositoryToken(Crop),
-          useValue: mockRepository,
+          useValue: mockCropRepository,
+        },
+        {
+          provide: getRepositoryToken(CultivationSpace),
+          useValue: mockCultivationSpaceRepository,
+        },
+        {
+          provide: getRepositoryToken(CultivationBed),
+          useValue: mockCultivationBedRepository,
+        },
+        {
+          provide: getRepositoryToken(CropStatus),
+          useValue: mockCropStatusRepository,
         },
       ],
     }).compile();
 
     service = module.get<CropService>(CropService);
-    repository = module.get<Repository<Crop>>(getRepositoryToken(Crop));
+    cropRepository = module.get<Repository<Crop>>(getRepositoryToken(Crop));
+    cultivationSpaceRepository = module.get<Repository<CultivationSpace>>(getRepositoryToken(CultivationSpace));
+    cultivationBedRepository = module.get<Repository<CultivationBed>>(getRepositoryToken(CultivationBed));
+    cropStatusRepository = module.get<Repository<CropStatus>>(getRepositoryToken(CropStatus));
     
     // Réinitialiser les mocks
     vi.clearAllMocks();
@@ -55,55 +105,60 @@ describe('CropService', () => {
   describe('create', () => {
     it('devrait créer une nouvelle culture', async () => {
       const createCropDto: CreateCropDto = {
-        crop_name: 'Tomate',
-        crop_plant_date: new Date(),
-        crop_commentary: 'Commentaire test',
-        crop_plant_family: 'Solanacées',
-        crop_variety: 'Tomate cerise',
-        crop_status: 'En cours'
+        name: 'Tomate',
+        plantDate: new Date(),
+        commentary: 'Commentaire test',
+        plantFamily: 'Solanacées',
+        variety: 'Tomate cerise',
+        statusId: '1',
+        cultivationSpaceIds: [],
+        cultivationBedIds: []
       };
 
-      // Le service utilise Object.assign et save directement sans appeler create
-      mockRepository.save.mockResolvedValue(mockCrop);
+      // Le service recherche la culture après l'avoir sauvegardée
+      mockCropRepository.save.mockResolvedValue({ id: '123' });
+      mockCropRepository.findOne.mockResolvedValue(mockCrop);
 
       const result = await service.create(createCropDto);
 
       expect(result).toEqual(mockCrop);
-      // On ne vérifie pas l'appel à create car il n'est pas utilisé
-      expect(mockRepository.save).toHaveBeenCalled();
-      
-      // Vérifier que l'objet passé à save a les bonnes propriétés
-      const savedObject = mockRepository.save.mock.calls[0][0];
-      expect(savedObject).toBeDefined();
+      expect(mockCropRepository.save).toHaveBeenCalled();
+      expect(mockCropRepository.findOne).toHaveBeenCalledWith({
+        where: { id: '123' },
+        relations: { status: true }
+      });
     });
   });
 
   describe('findAll', () => {
     it('devrait retourner toutes les cultures', async () => {
       const crops = [mockCrop];
-      mockRepository.find.mockResolvedValue(crops);
+      mockCropRepository.find.mockResolvedValue(crops);
 
       const result = await service.findAll();
 
       expect(result).toEqual(crops);
-      expect(mockRepository.find).toHaveBeenCalled();
+      expect(mockCropRepository.find).toHaveBeenCalledWith({
+        relations: { status: true }
+      });
     });
   });
 
   describe('findOne', () => {
     it('devrait retourner une culture par son ID', async () => {
-      mockRepository.findOne.mockResolvedValue(mockCrop);
+      mockCropRepository.findOne.mockResolvedValue(mockCrop);
 
       const result = await service.findOne('123');
 
       expect(result).toEqual(mockCrop);
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
+      expect(mockCropRepository.findOne).toHaveBeenCalledWith({
         where: { id: '123' },
+        relations: { status: true }
       });
     });
 
     it('devrait lancer une exception si la culture n\'est pas trouvée', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
+      mockCropRepository.findOne.mockResolvedValue(null);
 
       await expect(service.findOne('123')).rejects.toThrow(NotFoundException);
     });
@@ -112,24 +167,25 @@ describe('CropService', () => {
   describe('update', () => {
     it('devrait mettre à jour une culture', async () => {
       const updateCropDto: UpdateCropDto = {
-        crop_name: 'Tomate mise à jour',
-        crop_status: 'Terminé'
+        name: 'Tomate mise à jour',
+        statusId: '2'
       };
 
-      mockRepository.findOne.mockResolvedValue(mockCrop);
-      mockRepository.save.mockResolvedValue({ ...mockCrop, ...updateCropDto });
+      mockCropRepository.findOne.mockResolvedValueOnce(mockCrop).mockResolvedValueOnce(mockCrop);
+      mockCropRepository.save.mockResolvedValue(mockCrop);
 
       const result = await service.update('123', updateCropDto);
 
-      expect(result).toEqual({ ...mockCrop, ...updateCropDto });
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
+      expect(result).toEqual(mockCrop);
+      expect(mockCropRepository.findOne).toHaveBeenCalledWith({
         where: { id: '123' },
+        relations: { status: true }
       });
-      expect(mockRepository.save).toHaveBeenCalled();
+      expect(mockCropRepository.save).toHaveBeenCalled();
     });
 
     it('devrait lancer une exception si la culture n\'est pas trouvée', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
+      mockCropRepository.findOne.mockResolvedValue(null);
 
       await expect(service.update('123', {} as UpdateCropDto)).rejects.toThrow(NotFoundException);
     });
@@ -137,23 +193,16 @@ describe('CropService', () => {
 
   describe('remove', () => {
     it('devrait supprimer une culture', async () => {
-      // Le service ne vérifie pas si la culture existe avant de la supprimer
-      mockRepository.delete.mockResolvedValue({ affected: 1 });
+      mockCropRepository.findOne.mockResolvedValue(mockCrop);
+      mockCropRepository.remove.mockResolvedValue({});
 
       await service.remove('123');
 
-      expect(mockRepository.delete).toHaveBeenCalledWith({ id: '123' });
-    });
-
-    it('devrait toujours tenter de supprimer même si la culture n\'existe pas', async () => {
-      // Le service actuel ne vérifie pas l'existence avant de supprimer
-      // et ne lance pas d'exception si l'élément n'existe pas
-      mockRepository.delete.mockResolvedValue({ affected: 0 });
-      
-      // Simuler le comportement du service
-      await service.remove('123');
-      
-      expect(mockRepository.delete).toHaveBeenCalledWith({ id: '123' });
+      expect(mockCropRepository.findOne).toHaveBeenCalledWith({
+        where: { id: '123' },
+        relations: { status: true }
+      });
+      expect(mockCropRepository.remove).toHaveBeenCalledWith(mockCrop);
     });
   });
 }); 

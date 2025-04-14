@@ -21,25 +21,32 @@ describe('UserService', () => {
     findOne: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
+    createQueryBuilder: vi.fn(() => ({
+      relation: vi.fn(() => ({
+        of: vi.fn(() => ({
+          set: vi.fn(),
+        })),
+      })),
+    })),
   };
 
   const mockRoleRepository = {
     findOne: vi.fn(),
   };
 
-  const mockRole: Role = {
+  const mockRole = {
     id: 1,
     role: 'admin',
-    users: [],
+    users: Promise.resolve([]),
   };
 
-  const mockUser: User = {
+  const mockUser = {
     id_user: '123',
     email: 'test@test.com',
     username: 'testuser',
     password: 'password123',
-    role: mockRole,
-    lands: [],
+    role: Promise.resolve(mockRole),
+    lands: Promise.resolve([]),
     users_creation_date: new Date(),
   };
 
@@ -61,6 +68,9 @@ describe('UserService', () => {
     service = module.get<UserService>(UserService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
     roleRepository = module.get<Repository<Role>>(getRepositoryToken(Role));
+    
+    // Réinitialiser les mocks
+    vi.clearAllMocks();
   });
 
   describe('create', () => {
@@ -74,13 +84,20 @@ describe('UserService', () => {
 
       // Simuler la recherche du rôle
       mockRoleRepository.findOne.mockResolvedValue(mockRole);
-      mockUserRepository.save.mockResolvedValue(mockUser);
+      // Simuler la sauvegarde de l'utilisateur
+      mockUserRepository.save.mockResolvedValue({ id_user: '123' });
+      // Simuler la recherche de l'utilisateur après sauvegarde
+      mockUserRepository.findOne
+        .mockResolvedValueOnce({ id_user: '123' }) // Pour l'appel userRepository.findOne après save
+        .mockResolvedValueOnce(mockUser); // Pour l'appel à this.findOne(savedUser.id_user)
 
       const result = await service.create(createUserDto);
 
       expect(result).toEqual(mockUser);
       expect(mockRoleRepository.findOne).toHaveBeenCalledWith({ where: { role: 'admin' } });
       expect(mockUserRepository.save).toHaveBeenCalled();
+      expect(mockUserRepository.findOne).toHaveBeenCalledTimes(2);
+      expect(mockUserRepository.createQueryBuilder).toHaveBeenCalled();
     });
 
     it('devrait lancer une exception si le rôle n\'est pas trouvé', async () => {
@@ -181,6 +198,12 @@ describe('UserService', () => {
         relations: ['role', 'lands'],
       });
     });
+    
+    it('devrait lancer une exception si l\'utilisateur n\'est pas trouvé par email', async () => {
+      mockUserRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.findByEmail('nonexistent@test.com')).rejects.toThrow(NotFoundException);
+    });
   });
 
   describe('findByUsername', () => {
@@ -194,6 +217,12 @@ describe('UserService', () => {
         where: { username: 'testuser' },
         relations: ['role', 'lands'],
       });
+    });
+    
+    it('devrait lancer une exception si l\'utilisateur n\'est pas trouvé par nom d\'utilisateur', async () => {
+      mockUserRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.findByUsername('nonexistentuser')).rejects.toThrow(NotFoundException);
     });
   });
 }); 

@@ -12,9 +12,9 @@ import { Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { AgriculturalActionService } from './agricultural-action.service';
 import { AgriculturalAction } from './entities/agricultural-action.entity';
-import { CultivationSpace } from '../module/cultivation-space/entities/cultivation-space.entity';
-import { CultivationBed } from '../module/cultivation-bed/entities/cultivation-bed.entity';
-import { Crop } from '../module/crop/entities/crop.entity';
+import { CultivationSpace } from '../cultivation-space/entities/cultivation-space.entity';
+import { CultivationBed } from '../cultivation-bed/entities/cultivation-bed.entity';
+import { Crop } from '../crop/entities/crop.entity';
 import { CreateAgriculturalActionDto } from './dto/create-agricultural-action.dto';
 import { UpdateAgriculturalActionDto } from './dto/update-agricultural-action.dto';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -249,8 +249,7 @@ describe('AgriculturalActionService', () => {
   describe('findByType', () => {
     const actionType = AgriculturalActionType.PLANTATION;
     const mockActions = [
-      { id: '1', type: AgriculturalActionType.PLANTATION, actionDate: new Date('2023-06-01') },
-      { id: '2', type: AgriculturalActionType.PLANTATION, actionDate: new Date('2023-07-15') },
+      { id: '1', type: AgriculturalActionType.PLANTATION },
     ];
 
     it('devrait retourner les actions du type spécifié', async () => {

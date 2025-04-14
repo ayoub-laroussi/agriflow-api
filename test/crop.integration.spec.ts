@@ -1,11 +1,13 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Crop } from '../src/module/crop/entities/crop.entity';
+import { JwtService } from '@nestjs/jwt';
+import { generateStandardTestToken } from './utils/jwt-test.utils';
+import { createTestingApp } from './setup/test-app.factory';
 
 // Augmenter le timeout pour tous les tests
 vi.setConfig({ testTimeout: 30000 });
@@ -13,21 +15,25 @@ vi.setConfig({ testTimeout: 30000 });
 describe('Module Crop - Tests d\'intégration', () => {
   let app: INestApplication;
   let cropRepository: Repository<Crop>;
+  let jwtService: JwtService;
+  let authToken: string;
   let createdCropId: string | null = null;
-  let moduleFixture: TestingModule;
 
   beforeAll(async () => {
     try {
-      moduleFixture = await Test.createTestingModule({
-        imports: [AppModule],
-      }).compile();
-
-      app = moduleFixture.createNestApplication();
-      app.useGlobalPipes(new ValidationPipe());
+      const [testApp, moduleFixture] = await createTestingApp([AppModule]);
+      app = testApp;
       
       cropRepository = moduleFixture.get<Repository<Crop>>(getRepositoryToken(Crop));
+      jwtService = moduleFixture.get<JwtService>(JwtService);
       
-      await app.init();
+      // Création d'un token de test
+      authToken = generateStandardTestToken({
+        sub: 'test-user-id',
+        email: 'test@example.com',
+        username: 'testuser'
+      });
+      
       console.log('Application initialisée avec succès');
     } catch (error) {
       console.error('Erreur lors de l\'initialisation:', error);
@@ -64,6 +70,7 @@ describe('Module Crop - Tests d\'intégration', () => {
 
       const response = await request(app.getHttpServer())
         .post('/crops')
+        .set('Authorization', `Bearer ${authToken}`)
         .send(createCropDto)
         .expect(201);
 
@@ -83,6 +90,7 @@ describe('Module Crop - Tests d\'intégration', () => {
 
       const response = await request(app.getHttpServer())
         .post('/crops')
+        .set('Authorization', `Bearer ${authToken}`)
         .send(invalidCropDto)
         .expect(400);
 
@@ -96,6 +104,7 @@ describe('Module Crop - Tests d\'intégration', () => {
     it('devrait récupérer toutes les cultures', async () => {
       const response = await request(app.getHttpServer())
         .get('/crops')
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       expect(Array.isArray(response.body)).toBe(true);
@@ -108,6 +117,7 @@ describe('Module Crop - Tests d\'intégration', () => {
     it('devrait récupérer une culture par son ID', async () => {
       const response = await request(app.getHttpServer())
         .get(`/crops/${createdCropId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       expect(response.body).toHaveProperty('id', createdCropId);
@@ -120,6 +130,7 @@ describe('Module Crop - Tests d\'intégration', () => {
       
       const response = await request(app.getHttpServer())
         .get(`/crops/${nonExistentId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(404);
 
       expect(response.body).toHaveProperty('message');
@@ -137,6 +148,7 @@ describe('Module Crop - Tests d\'intégration', () => {
 
       const response = await request(app.getHttpServer())
         .patch(`/crops/${createdCropId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .send(updateCropDto)
         .expect(200);
 
@@ -151,6 +163,7 @@ describe('Module Crop - Tests d\'intégration', () => {
       
       const response = await request(app.getHttpServer())
         .patch(`/crops/${nonExistentId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .send(updateCropDto)
         .expect(404);
 
@@ -164,11 +177,13 @@ describe('Module Crop - Tests d\'intégration', () => {
     it('devrait supprimer une culture', async () => {
       await request(app.getHttpServer())
         .delete(`/crops/${createdCropId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
 
       // Vérifier que la culture a bien été supprimée
       await request(app.getHttpServer())
         .get(`/crops/${createdCropId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(404);
       
       // Éviter une deuxième tentative de suppression dans le afterAll
@@ -180,6 +195,7 @@ describe('Module Crop - Tests d\'intégration', () => {
       
       await request(app.getHttpServer())
         .delete(`/crops/${nonExistentId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
     });
   });
@@ -196,6 +212,7 @@ describe('Module Crop - Tests d\'intégration', () => {
 
       const response = await request(app.getHttpServer())
         .post('/crops')
+        .set('Authorization', `Bearer ${authToken}`)
         .send(invalidCropDto)
         .expect(400);
 
@@ -211,6 +228,7 @@ describe('Module Crop - Tests d\'intégration', () => {
 
       const response = await request(app.getHttpServer())
         .post('/crops')
+        .set('Authorization', `Bearer ${authToken}`)
         .send(invalidCropDto)
         .expect(400);
 

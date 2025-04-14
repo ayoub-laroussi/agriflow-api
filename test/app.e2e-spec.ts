@@ -1,11 +1,14 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
+import { JwtService } from '@nestjs/jwt';
+import { generateStandardTestToken } from './utils/jwt-test.utils';
+import { createTestingApp } from './setup/test-app.factory';
 
 describe('API (e2e)', () => {
   let app: INestApplication;
+  let jwtService: JwtService;
   let userToken: string;
   let userId: string;
   let roleId: number;
@@ -13,17 +16,23 @@ describe('API (e2e)', () => {
   let cultivationSpaceId: string;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
-    await app.init();
-  });
+    const [testApp, moduleFixture] = await createTestingApp([AppModule]);
+    app = testApp;
+    
+    jwtService = moduleFixture.get<JwtService>(JwtService);
+    
+    // Création d'un token de test
+    userToken = generateStandardTestToken({
+      sub: 'test-user-id',
+      email: 'test@example.com',
+      username: 'testuser'
+    });
+  }, 30000); // Augmenter le timeout
 
   afterAll(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 
   describe('Rôles', () => {
