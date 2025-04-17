@@ -89,20 +89,6 @@ async function bootstrap() {
       Gestion des notifications pour les alertes météo, les rappels de tâches et les événements liés aux cultures.
     `)
     .setVersion('1.0')
-    .addTag('auth', 'Authentification et gestion des tokens')
-    .addTag('users', 'Gestion des utilisateurs')
-    .addTag('roles', 'Gestion des rôles utilisateurs')
-    .addTag('lands', 'Gestion des terrains')
-    .addTag('cultivation-spaces', 'Gestion des espaces de culture')
-    .addTag('cultivation-beds', 'Gestion des planches de culture')
-    .addTag('crops', 'Gestion des cultures')
-    .addTag('crop-status', 'Gestion des statuts de culture')
-    .addTag('agricultural-actions', 'Gestion des actions agricoles')
-    .addTag('observations', 'Gestion des observations météorologiques')
-    .addTag('notifications', 'Gestion des notifications')
-    .addTag('notification-preferences', 'Gestion des préférences de notification')
-    .addTag('soilcover', 'Gestion des couvertures de sol')
-    .addTag('area', 'Gestion des aires')
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',
