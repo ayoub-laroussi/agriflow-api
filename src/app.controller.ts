@@ -3,10 +3,24 @@ import { join } from 'path';
 import * as fs from 'fs';
 import { FastifyReply } from 'fastify';
 
+/**
+ * Contrôleur principal de l'application
+ * 
+ * @class AppController
+ * @description Gère les routes principales de l'application, notamment les pages de test d'authentification
+ */
 @Controller()
 export class AppController {
   private readonly logger = new Logger(AppController.name);
 
+  /**
+   * Sert la page de test d'authentification
+   * 
+   * @method serveAuthTestPage
+   * @param {FastifyReply} res - L'objet réponse Fastify
+   * @returns {void}
+   * @description Cherche et sert le fichier HTML de test d'authentification à partir de différents chemins possibles
+   */
   @Get('test-auth')
   serveAuthTestPage(@Res() res: FastifyReply): void {
     // Essayer plusieurs chemins possibles
@@ -35,6 +49,14 @@ export class AppController {
     });
   }
 
+  /**
+   * Sert la page de callback d'authentification
+   * 
+   * @method serveAuthCallbackPage
+   * @param {FastifyReply} res - L'objet réponse Fastify
+   * @returns {void}
+   * @description Cherche et sert le fichier HTML de callback d'authentification à partir de différents chemins possibles
+   */
   @Get('auth-callback-page')
   serveAuthCallbackPage(@Res() res: FastifyReply): void {
     // Essayer plusieurs chemins possibles

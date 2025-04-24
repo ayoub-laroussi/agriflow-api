@@ -44,6 +44,50 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Documentation
+
+La documentation de l'API est générée avec JSDoc. Pour accéder à la documentation :
+
+```bash
+# Générer la documentation
+$ npm run docs
+
+# Lancer le serveur de documentation
+$ npm run docs:serve
+```
+
+Une fois le serveur lancé, accédez à la documentation via votre navigateur à l'adresse :
+http://localhost:8080
+
+La documentation présente :
+- Les contrôleurs de l'application
+- Les services métier
+- Les entités et DTOs
+- Les descriptions des méthodes et propriétés
+
+Pour ajouter de la documentation à vos fichiers, utilisez le format JSDoc comme dans cet exemple :
+
+```typescript
+/**
+ * Description de la classe
+ * 
+ * @class MaClasse
+ * @description Une description détaillée
+ */
+export class MaClasse {
+  /**
+   * Description de la méthode
+   * 
+   * @method maMethode
+   * @param {string} param - Description du paramètre
+   * @returns {boolean} - Description du retour
+   */
+  maMethode(param: string): boolean {
+    // Implémentation
+  }
+}
+```
+
 ## Run tests
 
 ```bash

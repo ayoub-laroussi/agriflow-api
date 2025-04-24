@@ -1,0 +1,17 @@
+{
+  "entryPoints": ["src"],
+  "entryPointStrategy": "expand",
+  "out": "docs",
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "dist/**/*"],
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "theme": "default",
+  "includeVersion": true,
+  "readme": "README.md",
+  "name": "API AgriFlow",
+  "navigationLinks": {
+    "GitHub": "https://github.com/yourusername/agriflow-api"
+  },
+  "skipErrorChecking": true
+} 
