@@ -46,18 +46,22 @@ $ npm run start:prod
 
 ## Documentation
 
-La documentation de l'API est générée avec JSDoc. Pour accéder à la documentation :
+La documentation de l'API est générée avec TypeDoc. Pour gérer la documentation :
 
 ```bash
 # Générer la documentation
 $ npm run docs
 
-# Lancer le serveur de documentation
+# Lancer le serveur de documentation local
 $ npm run docs:serve
+
+# Déployer la documentation sur GitHub Pages
+$ npm run docs:deploy
 ```
 
-Une fois le serveur lancé, accédez à la documentation via votre navigateur à l'adresse :
-http://localhost:8080
+Vous pouvez accéder à la documentation de différentes manières :
+- **Localement** : http://localhost:8080 (après avoir exécuté `npm run docs:serve`)
+- **En ligne** : https://[votre-nom-utilisateur].github.io/agriflow-api/ (après déploiement sur GitHub Pages)
 
 La documentation présente :
 - Les contrôleurs de l'application
@@ -70,17 +74,12 @@ Pour ajouter de la documentation à vos fichiers, utilisez le format JSDoc comme
 ```typescript
 /**
  * Description de la classe
- * 
- * @class MaClasse
- * @description Une description détaillée
  */
 export class MaClasse {
   /**
    * Description de la méthode
-   * 
-   * @method maMethode
-   * @param {string} param - Description du paramètre
-   * @returns {boolean} - Description du retour
+   * @param param - Description du paramètre
+   * @returns Description du retour
    */
   maMethode(param: string): boolean {
     // Implémentation

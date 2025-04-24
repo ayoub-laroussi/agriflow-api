@@ -13,5 +13,8 @@
   "navigationLinks": {
     "GitHub": "https://github.com/yourusername/agriflow-api"
   },
-  "skipErrorChecking": true
+  "skipErrorChecking": true,
+  "hideGenerator": true,
+  "disableSources": false,
+  "titleLink": "/agriflow-api"
 } 
