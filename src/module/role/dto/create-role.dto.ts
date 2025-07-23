@@ -7,7 +7,7 @@
  * @module CreateRoleDto
  */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 /**
  * DTO de création de rôle
@@ -16,6 +16,11 @@ import { IsString, IsNotEmpty } from 'class-validator';
  * Le nom du rôle est obligatoire et doit être une chaîne de caractères non vide.
  */
 export class CreateRoleDto {
+  @ApiProperty({ description: 'ID du rôle', required: false })
+  @IsNumber()
+  @IsOptional()
+  id?: number;
+
   @ApiProperty({ description: 'Nom du rôle' })
   @IsString()
   @IsNotEmpty()

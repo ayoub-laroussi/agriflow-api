@@ -68,7 +68,7 @@ export class CultivationSpaceController {
   @ApiOperation({ summary: 'Récupérer tous les espaces de culture d\'un terrain' })
   @ApiResponse({ status: 200, description: 'Liste des espaces de culture du terrain récupérée avec succès.' })
   findByLandId(@Param('landId') landId: string): Promise<CultivationSpace[]> {
-    return this.cultivationSpaceService.findByLandId(landId);
+    return this.cultivationSpaceService.findByLand(landId);
   }
 
   /**

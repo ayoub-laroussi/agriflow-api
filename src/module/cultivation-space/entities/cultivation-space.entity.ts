@@ -7,7 +7,7 @@
  * 
  * @module CultivationSpace
  */
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Land } from '../../land/entities/land.entity';
 import { Crop } from '../../crop/entities/crop.entity';
@@ -23,7 +23,7 @@ import { CultivationBed } from '../../cultivation-bed/entities/cultivation-bed.e
  */
 @Entity('cultivation_spaces')
 export class CultivationSpace {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   @ApiProperty({ 
     description: 'Identifiant unique de l\'espace de culture',
     example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
@@ -35,34 +35,91 @@ export class CultivationSpace {
   @ApiProperty({ 
     description: 'Nom de l\'espace de culture',
     example: 'Potager principal',
-    maxLength: 100
+    maxLength: 50
   })
-  name: string;
+  cultivation_space_name: string;
 
   @Column({ name: 'description', type: 'text', nullable: true })
   @ApiProperty({ 
-    description: 'Description détaillée de l\'espace de culture',
+    description: 'Commentaires sur l\'espace de culture',
     example: 'Espace dédié aux cultures maraîchères situé au sud de la propriété',
     required: false
   })
-  description: string;
+  cultivation_spaces_commentary: string;
 
-  @Column({ name: 'area', type: 'decimal', precision: 10, scale: 2 })
+  @Column({ name: 'area', type: 'numeric', precision: 10, scale: 2 })
   @ApiProperty({ 
     description: 'Surface de l\'espace de culture en mètres carrés',
-    example: 120.5,
+    example: 120,
     minimum: 0
   })
-  area: number;
+  cultivation_spaces_area: number;
 
-  @Column({ name: 'type', length: 50, type: 'varchar', nullable: true })
+  @Column({ name: 'type', type: 'varchar', length: 50, nullable: true })
   @ApiProperty({ 
     description: 'Type d\'espace de culture (rizière, champ, verger, potager)',
     example: 'potager',
     enum: ['rizière', 'champ', 'verger', 'potager'],
     required: false
   })
-  type: string;
+  cultivation_space_type: string;
+
+  @Column({ name: 'cultivation_spaces_length', type: 'integer', nullable: true })
+  @ApiProperty({ 
+    description: 'Longueur de l\'espace de culture en mètres',
+    example: 20,
+    minimum: 0
+  })
+  cultivation_spaces_length: number;
+
+  @Column({ name: 'cultivation_spaces_width', type: 'integer', nullable: true })
+  @ApiProperty({ 
+    description: 'Largeur de l\'espace de culture en mètres',
+    example: 6,
+    minimum: 0
+  })
+  cultivation_spaces_width: number;
+
+  @Column({ name: 'cultivation_spaces_soil_type', length: 50, type: 'varchar', nullable: true })
+  @ApiProperty({ 
+    description: 'Type de sol de l\'espace de culture',
+    example: 'argileux',
+    required: false
+  })
+  cultivation_spaces_soil_type: string;
+
+  @Column({ name: 'cultivation_spaces_ph', type: 'integer', nullable: true })
+  @ApiProperty({ 
+    description: 'pH du sol',
+    example: 7,
+    minimum: 0,
+    maximum: 14
+  })
+  cultivation_spaces_ph: number;
+
+  @Column({ name: 'cultivation_spaces_soil_fertility', length: 50, type: 'varchar', nullable: true })
+  @ApiProperty({ 
+    description: 'Fertilité du sol',
+    example: 'bonne',
+    required: false
+  })
+  cultivation_spaces_soil_fertility: string;
+
+  @Column({ name: 'cultivation_spaces_soil_drainage', length: 50, type: 'varchar', nullable: true })
+  @ApiProperty({ 
+    description: 'Drainage du sol',
+    example: 'bon',
+    required: false
+  })
+  cultivation_spaces_soil_drainage: string;
+
+  @Column({ name: 'cultivation_spaces_status', type: 'text', nullable: true })
+  @ApiProperty({ 
+    description: 'Statut de l\'espace de culture',
+    example: 'actif',
+    required: false
+  })
+  cultivation_spaces_status: string;
 
   @ManyToOne(() => Land)
   @JoinColumn({ name: 'land_id' })
@@ -78,11 +135,11 @@ export class CultivationSpace {
     example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
     format: 'uuid'
   })
-  landId: string;
+  id_land: string;
 
   @OneToMany(() => CultivationBed, cultivationBed => cultivationBed.cultivationSpace, { lazy: true })
   @ApiProperty({ 
-    description: 'Planches de culture associées à cet espace. Permet de diviser l\'espace en zones plus précises pour les cultures.',
+    description: 'Planches de culture associées à cet espace',
     type: () => [CultivationBed],
     isArray: true
   })
@@ -96,12 +153,12 @@ export class CultivationSpace {
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: 'crop_id',
-      referencedColumnName: 'id',
+      name: 'id_crop',
+      referencedColumnName: 'id_crop',
     },
   })
   @ApiProperty({ 
-    description: 'Cultures associées directement à cet espace (sans préciser la planche)',
+    description: 'Cultures associées directement à cet espace',
     type: () => [Crop],
     isArray: true
   })
@@ -109,17 +166,17 @@ export class CultivationSpace {
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   @ApiProperty({ 
-    description: 'Date de création de l\'enregistrement',
+    description: 'Date de création de l\'espace de culture',
     example: '2023-04-01T10:00:00Z',
     format: 'date-time'
   })
-  createdAt: Date;
+  cultivation_space_creation_date: Date;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   @ApiProperty({ 
-    description: 'Date de dernière modification de l\'enregistrement',
+    description: 'Date de dernière modification de l\'espace de culture',
     example: '2023-04-01T15:30:00Z',
     format: 'date-time'
   })
-  updatedAt: Date;
+  cultivation_space_modification_date: Date;
 }

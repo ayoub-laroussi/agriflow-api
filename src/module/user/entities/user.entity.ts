@@ -7,7 +7,7 @@
  * 
  * @module User
  */
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../role/entities/role.entity';
 import { Land } from '../../land/entities/land.entity';
@@ -20,7 +20,7 @@ import { Land } from '../../land/entities/land.entity';
  */
 @Entity('users')
 export class User {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   @ApiProperty({ description: 'Identifiant unique de l\'utilisateur' })
   id_user: string;
 
@@ -36,13 +36,17 @@ export class User {
   @ApiProperty({ description: 'Mot de passe de l\'utilisateur' })
   password: string;
 
-  @ManyToOne(() => Role, { lazy: true })
-  @JoinColumn({ name: 'role' })
+  @ManyToOne(() => Role, { eager: true })
+  @JoinColumn({ name: 'role', referencedColumnName: 'id_role' })
   @ApiProperty({ 
     description: 'Rôle de l\'utilisateur',
     type: () => Role 
   })
-  role: Promise<Role>;
+  role_entity: Role;
+
+  @Column({ name: 'role' })
+  @ApiProperty({ description: 'ID du rôle de l\'utilisateur' })
+  role: number;
 
   @OneToMany(() => Land, land => land.user, { lazy: true })
   @ApiProperty({ 

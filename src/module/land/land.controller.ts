@@ -68,7 +68,7 @@ export class LandController {
   @ApiOperation({ summary: 'Récupérer tous les terrains d\'un utilisateur' })
   @ApiResponse({ status: 200, description: 'Liste des terrains de l\'utilisateur récupérée avec succès.' })
   findByUserId(@Param('userId') userId: string): Promise<Land[]> {
-    return this.landService.findByUserId(userId);
+    return this.landService.findByUser(userId);
   }
 
   /**

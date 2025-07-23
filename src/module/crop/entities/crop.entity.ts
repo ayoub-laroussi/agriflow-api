@@ -1,100 +1,161 @@
 /**
- * Entité représentant une culture dans le système
+ * Entité représentant une culture
  * 
- * Cette entité définit la structure de données d'une culture dans l'application,
- * incluant ses propriétés (nom, famille, variété, etc.) et ses relations avec
- * les espaces de culture et les planches de culture.
- * Elle est mappée à la table 'crops' dans la base de données.
+ * Cette entité définit la structure de données pour les cultures,
+ * qui sont les plantes cultivées dans les espaces de culture.
  * 
  * @module Crop
  */
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn, JoinTable, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { CropStatus } from '../../crop-status/entities/crop-status.entity';
 import { CultivationSpace } from '../../cultivation-space/entities/cultivation-space.entity';
-import { CultivationBed } from '../../cultivation-bed/entities/cultivation-bed.entity';
 
 /**
- * Entité Culture
+ * Classe représentant une culture dans le système
  * 
- * Représente une culture avec ses propriétés et relations.
- * Une culture peut être associée à plusieurs espaces de culture et planches de culture.
+ * Une culture est une plante cultivée dans un ou plusieurs espaces de culture.
+ * Elle possède des caractéristiques comme le nom, la variété, le temps de croissance, etc.
  */
 @Entity('crops')
 export class Crop {
-  @ApiProperty({ description: 'Identifiant unique de la culture' })
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @ApiProperty({ description: 'Nom de la culture' })
-  @Column({ name: 'name', length: 100, type: 'varchar' })
-  name: string;
-
-  @ApiProperty({ description: 'Commentaire sur la culture' })
-  @Column({ name: 'commentary', type: 'text', nullable: true })
-  commentary: string;
-
-  @ApiProperty({ description: 'Famille de la plante' })
-  @Column({ name: 'plant_family', length: 100, type: 'varchar' })
-  plantFamily: string;
-
-  @ApiProperty({ description: 'Variété de la plante' })
-  @Column({ name: 'variety', length: 100, type: 'varchar' })
-  variety: string;
-
-  @ApiProperty({ description: 'Date de plantation' })
-  @Column({ name: 'plant_date', type: 'date' })
-  plantDate: Date;
-
-  @ApiProperty({ description: 'Statut de la culture' })
-  @ManyToOne(() => CropStatus, { nullable: false })
-  @JoinColumn({ name: 'status_id' })
-  status: CropStatus;
-
-  @Column({ name: 'status_id', type: 'uuid' })
-  statusId: string;
-
-  @ApiProperty({ description: 'Espaces de culture associés' })
-  @ManyToMany(() => CultivationSpace, (cultivationSpace) => cultivationSpace.crops, {
-    onDelete: 'CASCADE',
-    cascade: true,
-    lazy: true
+  @PrimaryColumn('uuid')
+  @ApiProperty({ 
+    description: 'Identifiant unique de la culture',
+    example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    format: 'uuid'
   })
+  id_crop: string;
+
+  @Column({ name: 'name', length: 100, type: 'varchar' })
+  @ApiProperty({ 
+    description: 'Nom de la culture',
+    example: 'Tomate',
+    maxLength: 100
+  })
+  crop_name: string;
+
+  @Column({ name: 'variety', length: 100, type: 'varchar', nullable: true })
+  @ApiProperty({ 
+    description: 'Variété de la culture',
+    example: 'Roma',
+    maxLength: 100,
+    required: false
+  })
+  crop_variety: string;
+
+  @Column({ name: 'family', length: 100, type: 'varchar', nullable: true })
+  @ApiProperty({ 
+    description: 'Famille botanique de la culture',
+    example: 'Solanacées',
+    maxLength: 100,
+    required: false
+  })
+  crop_family: string;
+
+  @Column({ name: 'growth_time', type: 'int', nullable: true })
+  @ApiProperty({ 
+    description: 'Temps de croissance en jours',
+    example: 90,
+    required: false
+  })
+  crop_growth_time: number;
+
+  @Column({ name: 'planting_depth', type: 'float', nullable: true })
+  @ApiProperty({ 
+    description: 'Profondeur de plantation en centimètres',
+    example: 2.5,
+    required: false
+  })
+  crop_planting_depth: number;
+
+  @Column({ name: 'spacing', type: 'float', nullable: true })
+  @ApiProperty({ 
+    description: 'Espacement entre les plants en centimètres',
+    example: 40,
+    required: false
+  })
+  crop_spacing: number;
+
+  @Column({ name: 'row_spacing', type: 'float', nullable: true })
+  @ApiProperty({ 
+    description: 'Espacement entre les rangées en centimètres',
+    example: 60,
+    required: false
+  })
+  crop_row_spacing: number;
+
+  @Column({ name: 'optimal_temperature', type: 'float', nullable: true })
+  @ApiProperty({ 
+    description: 'Température optimale de croissance en degrés Celsius',
+    example: 22.5,
+    required: false
+  })
+  crop_optimal_temperature: number;
+
+  @Column({ name: 'optimal_ph', type: 'float', nullable: true })
+  @ApiProperty({ 
+    description: 'pH optimal du sol',
+    example: 6.5,
+    required: false
+  })
+  crop_optimal_ph: number;
+
+  @Column({ name: 'water_needs', length: 50, type: 'varchar', nullable: true })
+  @ApiProperty({ 
+    description: 'Besoins en eau (faible, moyen, élevé)',
+    example: 'moyen',
+    maxLength: 50,
+    required: false
+  })
+  crop_water_needs: string;
+
+  @Column({ name: 'sun_exposure', length: 50, type: 'varchar', nullable: true })
+  @ApiProperty({ 
+    description: 'Exposition au soleil requise (ombre, mi-ombre, plein soleil)',
+    example: 'plein soleil',
+    maxLength: 50,
+    required: false
+  })
+  crop_sun_exposure: string;
+
+  @Column({ name: 'description', type: 'text', nullable: true })
+  @ApiProperty({ 
+    description: 'Description de la culture',
+    example: 'La tomate Roma est une variété déterminée, idéale pour les sauces.',
+    required: false
+  })
+  crop_description: string;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  @ApiProperty({ 
+    description: 'Date de création de l\'enregistrement',
+    example: '2023-01-01T12:00:00Z'
+  })
+  created_at: Date;
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  @ApiProperty({ 
+    description: 'Date de dernière mise à jour de l\'enregistrement',
+    example: '2023-01-01T12:00:00Z'
+  })
+  updated_at: Date;
+
+  @ManyToMany(() => CultivationSpace, cultivationSpace => cultivationSpace.crops, { lazy: true })
   @JoinTable({
     name: 'is_cultivated',
     joinColumn: {
-      name: 'crop_id',
-      referencedColumnName: 'id',
+      name: 'id_crop',
+      referencedColumnName: 'id_crop',
     },
     inverseJoinColumn: {
       name: 'cultivation_space_id',
       referencedColumnName: 'id',
     },
   })
+  @ApiProperty({ 
+    description: 'Espaces de culture où cette culture est plantée',
+    type: () => [CultivationSpace],
+    isArray: true
+  })
   cultivationSpaces: Promise<CultivationSpace[]>;
-
-  @ApiProperty({ description: 'Planches de culture associées' })
-  @ManyToMany(() => CultivationBed, (cultivationBed) => cultivationBed.crops, {
-    onDelete: 'CASCADE',
-    cascade: true,
-    lazy: true
-  })
-  @JoinTable({
-    name: 'cultivation_bed_crops',
-    joinColumn: {
-      name: 'crop_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'cultivation_bed_id',
-      referencedColumnName: 'id',
-    },
-  })
-  cultivationBeds: Promise<CultivationBed[]>;
-
-  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-  updatedAt: Date;
 }

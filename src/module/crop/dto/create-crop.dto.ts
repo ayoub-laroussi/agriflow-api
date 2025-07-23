@@ -8,7 +8,7 @@
  * @module CreateCropDto
  */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsDate, IsNotEmpty, IsOptional, MaxLength, IsUUID, IsArray } from 'class-validator';
+import { IsString, IsDate, IsNotEmpty, IsOptional, MaxLength, IsUUID, IsArray, IsNumber } from 'class-validator';
 
 /**
  * Classe définissant les données requises pour créer une culture
@@ -44,6 +44,46 @@ export class CreateCropDto {
   @IsDate()
   @IsNotEmpty()
   plantDate: Date;
+
+  @ApiProperty({ description: 'Temps de croissance en jours', required: false })
+  @IsNumber()
+  @IsOptional()
+  growthTime?: number;
+
+  @ApiProperty({ description: 'Profondeur de plantation en centimètres', required: false })
+  @IsNumber()
+  @IsOptional()
+  plantingDepth?: number;
+
+  @ApiProperty({ description: 'Espacement entre les plants en centimètres', required: false })
+  @IsNumber()
+  @IsOptional()
+  spacing?: number;
+
+  @ApiProperty({ description: 'Espacement entre les rangées en centimètres', required: false })
+  @IsNumber()
+  @IsOptional()
+  rowSpacing?: number;
+
+  @ApiProperty({ description: 'Température optimale de croissance en degrés Celsius', required: false })
+  @IsNumber()
+  @IsOptional()
+  optimalTemperature?: number;
+
+  @ApiProperty({ description: 'pH optimal du sol', required: false })
+  @IsNumber()
+  @IsOptional()
+  optimalPh?: number;
+
+  @ApiProperty({ description: 'Besoins en eau (faible, moyen, élevé)', required: false })
+  @IsString()
+  @IsOptional()
+  waterNeeds?: string;
+
+  @ApiProperty({ description: 'Exposition au soleil requise (ombre, mi-ombre, plein soleil)', required: false })
+  @IsString()
+  @IsOptional()
+  sunExposure?: string;
 
   @ApiProperty({ 
     description: 'Identifiant du statut de la culture',

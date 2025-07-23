@@ -236,3 +236,7 @@ export class UserController {
     return this.userService.findByUsername(username);
   }
 }
+
+// function ApiGetResource(User: typeof User): (target: UserController, propertyKey: "create", descriptor: TypedPropertyDescriptor<(createUserDto: CreateUserDto) => Promise<User>>) => void | TypedPropertyDescriptor<...> {
+//   throw new Error('Function not implemented.');
+// }

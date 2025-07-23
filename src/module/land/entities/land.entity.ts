@@ -7,7 +7,7 @@
  * 
  * @module Land
  */
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
 import { CultivationSpace } from '../../cultivation-space/entities/cultivation-space.entity';
@@ -21,7 +21,7 @@ import { CultivationSpace } from '../../cultivation-space/entities/cultivation-s
  */
 @Entity('land')
 export class Land {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   @ApiProperty({ description: 'Identifiant unique du terrain' })
   id_land: string;
 
@@ -29,11 +29,11 @@ export class Land {
   @ApiProperty({ description: 'Nom du terrain' })
   land_name: string;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'integer' })
   @ApiProperty({ description: 'Surface du terrain en mètres carrés' })
   land_area: number;
 
-  @Column({ nullable: true, type: 'float' })
+  @Column({ nullable: true, type: 'integer' })
   @ApiProperty({ description: 'Coordonnées du terrain', required: false })
   land_coordinate?: number;
 

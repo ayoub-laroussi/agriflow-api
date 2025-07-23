@@ -7,9 +7,8 @@
  * 
  * @module CropStatus
  */
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { Crop } from '../../crop/entities/crop.entity';
 
 /**
  * Entité Statut de Culture
@@ -43,13 +42,9 @@ export class CropStatus {
   @Column({ name: 'is_predefined', type: 'boolean', default: false })
   isPredefined: boolean;
 
-  @ApiProperty({ description: 'Cultures associées à ce statut' })
-  @OneToMany(() => Crop, crop => crop.status)
-  crops: Crop[];
-
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
-} 
+}

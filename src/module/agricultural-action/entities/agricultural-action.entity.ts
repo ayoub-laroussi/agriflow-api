@@ -74,7 +74,7 @@ export class AgriculturalAction {
 
   @ApiProperty({ description: 'Culture concernée' })
   @ManyToOne(() => Crop, { nullable: true })
-  @JoinColumn({ name: 'crop_id' })
+  @JoinColumn({ name: 'crop_id', referencedColumnName: 'id_crop' })
   crop: Crop;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })

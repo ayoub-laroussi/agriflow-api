@@ -6,9 +6,9 @@
  * 
  * @module AppModule
  */
+import { DataSource } from 'typeorm';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { UserModule } from './module/user/user.module';
 import { RoleModule } from './module/role/role.module';
@@ -16,13 +16,14 @@ import { LandModule } from './module/land/land.module';
 import { SoilCoverModule } from './module/soilcover/soilcover.module';
 import { CultivationSpaceModule } from './module/cultivation-space/cultivation-space.module';
 import { CropModule } from './module/crop/crop.module';
-import { typeOrmConfig } from './config/typeorm.config';
 import { CultivationBedModule } from './module/cultivation-bed/cultivation-bed.module';
 import { AgriculturalActionModule } from './module/agricultural-action/agricultural-action.module';
 import { ObservationModule } from './module/observation/observation.module';
 import { NotificationModule } from './module/notification/notification.module';
 import { AuthModule } from './module/auth/auth.module';
 import { AreaModule } from './module/area/area.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeOrmConfig } from './config/typeorm.config';
 
 
 /**
@@ -43,22 +44,8 @@ import { AreaModule } from './module/area/area.module';
       isGlobal: true,
     }),
     
-    // Base de données
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 5432),
-        username: configService.get('DB_USERNAME', 'postgres'),
-        password: configService.get('DB_PASSWORD', 'postgres'),
-        database: configService.get('DB_NAME', 'agriflow'),
-        entities: ['dist/**/*.entity{.ts,.js}'],
-        synchronize: configService.get('NODE_ENV') !== 'production',
-        logging: configService.get('NODE_ENV') === 'development',
-      }),
-    }),
+    // Base de données - utilise la configuration depuis typeorm.config.ts
+    TypeOrmModule.forRoot(typeOrmConfig), 
     
     // Planification de tâches
     ScheduleModule.forRoot(),
@@ -79,4 +66,6 @@ import { AreaModule } from './module/area/area.module';
     AgriculturalActionModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}

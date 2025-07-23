@@ -2,14 +2,15 @@
  * Service de gestion des utilisateurs
  * 
  * Ce service gère la logique métier et l'accès aux données pour les utilisateurs.
- * Il offre des fonctionnalités de création, récupération, mise à jour et suppression
- * d'utilisateurs, ainsi que des recherches spécifiques par email et nom d'utilisateur.
+ * Il fournit des méthodes pour créer, récupérer, mettre à jour et supprimer des utilisateurs,
+ * ainsi que des méthodes spécifiques pour rechercher des utilisateurs par email ou nom d'utilisateur.
  * 
  * @module UserService
  */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -18,8 +19,8 @@ import { Role } from '../role/entities/role.entity';
 /**
  * Service responsable de la gestion des utilisateurs
  * 
- * Fournit les méthodes pour manipuler les données utilisateurs en base
- * et implémente la logique métier associée.
+ * Fournit les méthodes pour manipuler les données des utilisateurs en base
+ * et implémente la logique métier associée, comme le hachage des mots de passe.
  */
 @Injectable()
 export class UserService {
@@ -31,51 +32,42 @@ export class UserService {
   ) {}
 
   /**
-   * Crée un nouvel utilisateur avec le rôle spécifié
+   * Crée un nouvel utilisateur
    * 
    * @param {CreateUserDto} createUserDto - Données pour la création de l'utilisateur
    * @returns {Promise<User>} L'utilisateur créé
    * @throws {NotFoundException} Si le rôle spécifié n'existe pas
    */
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = new User();
-    const { role: roleName, ...userData } = createUserDto;
+    // Hacher le mot de passe
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     
-    // Récupérer le rôle depuis la base de données
-    const role = await this.roleRepository.findOne({ where: { role: roleName } });
+    // Créer l'utilisateur
+    const user = new User();
+    user.email = createUserDto.email;
+    user.username = createUserDto.username;
+    user.password = hashedPassword;
+    
+    // Assigner le rôle par défaut si non spécifié
+    const roleName = createUserDto.role || 'user';
+    const role = await this.roleRepository.findOne({ where: { role_name: roleName } });
+    
     if (!role) {
       throw new NotFoundException(`Rôle ${roleName} non trouvé`);
     }
     
-    // Assigner les données de l'utilisateur et le rôle
-    Object.assign(user, userData);
+    user.role = role.id_role;
     
-    // Sauvegarder d'abord l'utilisateur sans relation
-    const savedUser = await this.userRepository.save(user);
-    
-    // Mettre à jour la relation avec le rôle
-    const userToUpdate = await this.userRepository.findOne({ where: { id_user: savedUser.id_user } });
-    if (userToUpdate) {
-      const userRoleRelation = this.userRepository
-        .createQueryBuilder()
-        .relation(User, 'role')
-        .of(userToUpdate);
-      
-      await userRoleRelation.set(role.id);
-    }
-    
-    return this.findOne(savedUser.id_user);
+    return this.userRepository.save(user);
   }
 
   /**
-   * Récupère tous les utilisateurs avec leurs relations (rôle, terrains)
+   * Récupère tous les utilisateurs
    * 
    * @returns {Promise<User[]>} Liste de tous les utilisateurs
    */
-  findAll(): Promise<User[]> {
-    return this.userRepository.find({
-      relations: ['role', 'lands'],
-    });
+  async findAll(): Promise<User[]> {
+    return this.userRepository.find();
   }
 
   /**
@@ -87,12 +79,13 @@ export class UserService {
    */
   async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { id_user: id },
-      relations: ['role', 'lands'],
+      where: { id_user: id }
     });
+    
     if (!user) {
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé`);
     }
+    
     return user;
   }
 
@@ -106,8 +99,28 @@ export class UserService {
    */
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
-    Object.assign(user, updateUserDto);
-    return await this.userRepository.save(user);
+    
+    if (updateUserDto.email !== undefined) {
+      user.email = updateUserDto.email;
+    }
+    
+    if (updateUserDto.username !== undefined) {
+      user.username = updateUserDto.username;
+    }
+    
+    if (updateUserDto.password !== undefined) {
+      user.password = await bcrypt.hash(updateUserDto.password, 10);
+    }
+    
+    if (updateUserDto.role !== undefined) {
+      const role = await this.roleRepository.findOne({ where: { role_name: updateUserDto.role } });
+      if (!role) {
+        throw new NotFoundException(`Rôle ${updateUserDto.role} non trouvé`);
+      }
+      user.role = role.id_role;
+    }
+    
+    return this.userRepository.save(user);
   }
 
   /**
@@ -115,9 +128,11 @@ export class UserService {
    * 
    * @param {string} id - ID de l'utilisateur à supprimer
    * @returns {Promise<void>}
+   * @throws {NotFoundException} Si l'utilisateur n'existe pas
    */
   async remove(id: string): Promise<void> {
-    await this.userRepository.delete({ id_user: id });
+    const user = await this.findOne(id);
+    await this.userRepository.remove(user);
   }
 
   /**
@@ -129,30 +144,32 @@ export class UserService {
    */
   async findByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { email },
-      relations: ['role', 'lands'],
+      where: { email }
     });
+    
     if (!user) {
       throw new NotFoundException(`Utilisateur avec l'email ${email} non trouvé`);
     }
+    
     return user;
   }
 
   /**
    * Récupère un utilisateur par son nom d'utilisateur
    * 
-   * @param {string} username - Nom d'utilisateur à récupérer
+   * @param {string} username - Nom d'utilisateur de l'utilisateur à récupérer
    * @returns {Promise<User>} L'utilisateur trouvé
    * @throws {NotFoundException} Si l'utilisateur n'existe pas
    */
   async findByUsername(username: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { username },
-      relations: ['role', 'lands'],
+      where: { username }
     });
+    
     if (!user) {
       throw new NotFoundException(`Utilisateur avec le nom d'utilisateur ${username} non trouvé`);
     }
+    
     return user;
   }
 }

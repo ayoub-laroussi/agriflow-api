@@ -70,7 +70,7 @@ export class AgriculturalActionService {
     }
 
     if (cropId) {
-      const crop = await this.cropRepository.findOne({ where: { id: cropId } });
+      const crop = await this.cropRepository.findOne({ where: { id_crop: cropId } });
       if (!crop) {
         throw new NotFoundException(`Culture avec l'ID ${cropId} non trouvée`);
       }
@@ -147,7 +147,7 @@ export class AgriculturalActionService {
     }
 
     if (cropId) {
-      const crop = await this.cropRepository.findOne({ where: { id: cropId } });
+      const crop = await this.cropRepository.findOne({ where: { id_crop: cropId } });
       if (!crop) {
         throw new NotFoundException(`Culture avec l'ID ${cropId} non trouvée`);
       }

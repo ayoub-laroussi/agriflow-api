@@ -146,7 +146,7 @@ export class CultivationBedController {
     description: 'Espace de culture non trouvé, ou aucune planche associée.'
   })
   findByCultivationSpaceId(@Param('cultivationSpaceId') cultivationSpaceId: string): Promise<CultivationBed[]> {
-    return this.cultivationBedService.findByCultivationSpaceId(cultivationSpaceId);
+    return this.cultivationBedService.findByCultivationSpace(cultivationSpaceId);
   }
 
   /**

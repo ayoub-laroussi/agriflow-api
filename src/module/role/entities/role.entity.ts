@@ -6,7 +6,7 @@
  * 
  * @module Role
  */
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
 
@@ -16,15 +16,15 @@ import { User } from '../../user/entities/user.entity';
  * Représente un rôle dans l'application avec ses propriétés et relations.
  * Un rôle peut être associé à plusieurs utilisateurs.
  */
-@Entity('roles')
+@Entity('Role')
 export class Role {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   @ApiProperty({ description: 'Identifiant unique du rôle' })
-  id: number;
+  id_role: number;
 
-  @Column({ length: 50, unique: true, type: 'varchar' })
+  @Column({ length: 50, type: 'varchar' })
   @ApiProperty({ description: 'Nom du rôle' })
-  role: string;
+  role_name: string;
 
   @OneToMany(() => User, user => user.role, { lazy: true })
   @ApiProperty({

@@ -159,7 +159,7 @@ export class CultivationBed {
     description: 'Cultures associées à la planche de culture',
     isArray: true
   })
-  @ManyToMany(() => Crop, crop => crop.cultivationBeds, { lazy: true })
+  @ManyToMany(() => Crop, crop => crop.cultivationSpaces, { lazy: true })
   @JoinTable({
     name: 'cultivation_bed_crops',
     joinColumn: {
@@ -167,8 +167,8 @@ export class CultivationBed {
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: 'crop_id',
-      referencedColumnName: 'id',
+      name: 'id_crop',
+      referencedColumnName: 'id_crop',
     },
   })
   crops: Promise<Crop[]>;

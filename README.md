@@ -139,3 +139,112 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+## Migrations de base de données
+
+AgriFlow utilise TypeORM pour gérer les migrations de base de données. Les migrations permettent de versionner le schéma de la base de données et de le faire évoluer de manière contrôlée.
+
+### Configuration des migrations
+
+La configuration des migrations se trouve dans :
+- `src/data-source.ts` : Configuration pour les commandes CLI de migration
+- `src/config/typeorm.config.ts` : Configuration pour l'application NestJS
+
+### Commandes de migration
+
+```bash
+# Générer une nouvelle migration basée sur les changements d'entités
+npm run migration:generate -- src/migrations/NomDeLaMigration
+
+# Créer une migration vide
+npm run migration:create NomDeLaMigration
+
+# Exécuter les migrations en attente
+npm run migration:run
+
+# Afficher les migrations appliquées et en attente
+npm run migration:show
+
+# Annuler la dernière migration
+npm run migration:revert
+```
+
+### Structure des migrations
+
+Les migrations sont stockées dans le dossier `src/migrations/`. Chaque fichier de migration contient deux méthodes :
+- `up()` : Applique les modifications à la base de données
+- `down()` : Annule les modifications (rollback)
+
+Pour plus d'informations, consultez le [README des migrations](src/migrations/README.md).
+
+### Alternative : Script SQL direct
+
+Si vous rencontrez des problèmes avec les commandes de migration TypeORM, vous pouvez utiliser le script SQL directement :
+
+```bash
+# Exécuter le script de migration SQL
+psql -U postgres -d agriflow -f migration.sql
+```
+
+Le fichier `migration.sql` contient toutes les commandes SQL nécessaires pour créer la structure de base de données.
+
+# AgriFlow API
+
+## Jeu de données de test
+
+Ce projet inclut un jeu de données de test qui peut être chargé automatiquement lors du démarrage du conteneur Docker.
+
+### Structure des données de test
+
+Le fichier `seed-data.sql` contient des données pour les entités suivantes :
+- Rôles (2 entrées)
+- Utilisateurs (2 entrées)
+- Terrains (2 entrées)
+- Espaces de culture (2 entrées)
+- Planches de culture (2 entrées)
+- Cultures (2 entrées)
+- Statuts de culture (2 entrées)
+- Actions agricoles (2 entrées)
+- Observations (2 entrées)
+- Zones (2 entrées)
+- Couvertures de sol (2 entrées)
+- Notifications (2 entrées)
+- Préférences de notification (2 entrées)
+
+### Démarrage avec Docker
+
+Pour démarrer l'application avec les données de test :
+
+```bash
+cd agriflow-api
+docker-compose up --build
+```
+
+Le script `docker-entrypoint.sh` s'occupera de :
+1. Attendre que la base de données PostgreSQL soit prête
+2. Exécuter les migrations si elles existent
+3. Charger les données de test à partir du fichier `seed-data.sql`
+4. Démarrer l'application
+
+### Identifiants de test
+
+Deux utilisateurs sont créés :
+
+1. **Administrateur**
+   - Email: admin@agriflow.com
+   - Mot de passe: (hashé dans la base de données)
+   - Rôle: Administrateur
+
+2. **Agriculteur**
+   - Email: agriculteur@agriflow.com
+   - Mot de passe: (hashé dans la base de données)
+   - Rôle: Agriculteur
+
+### Modification des données de test
+
+Pour modifier les données de test, éditez le fichier `seed-data.sql` puis reconstruisez les conteneurs Docker :
+
+```bash
+docker-compose down
+docker-compose up --build
+```
